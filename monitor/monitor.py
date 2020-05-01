@@ -32,6 +32,12 @@ class watch:
             if "size" not in df.keys():
                 fixed_size = np.ones(len(df["x"]))
                 df["size"] = fixed_size
+        if fig_type == "scatter":
+            if "agent_type" not in df.keys():
+                fixed_agent_type = "agent"
+                df["agent_type"] = fixed_agent_type
+
+
 
 
         
