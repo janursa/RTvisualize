@@ -9,7 +9,7 @@ from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 import plotly.express as px
 from time import sleep
-from flask import request
+# from flask import request
 
 external_stylesheets = [
     "https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"
@@ -47,18 +47,18 @@ class watch:
     def update_db(self):
         any_update_flag = False  # if any of the files has changed
         for name in self.df.keys(): # main keys such as plot names
-            file = self.df[name]["dir"]
+            file = self.df[name]["graph_dir"]
             last_moddate = os.stat(file)[8] # last modification time
             if "moddate" not in self.df[name].keys() : # in this case, file is not upload for the first optimizer
                 data = self.read_file(file)
-                data = self.process_data(data,self.df[name]["type"])
+                data = self.process_data(data,self.df[name]["graph_type"])
 
                 self.df[name].update({"data":data})
                 self.df[name].update({"moddate":last_moddate})
                 any_update_flag = True
             elif self.df[name]["moddate"] != last_moddate:# if the new date is different
                 data = self.read_file(file)
-                data = self.process_data(data,self.df[name]["type"])
+                data = self.process_data(data,self.df[name]["graph_type"])
 
                 self.df[name].update({"data":data})
                 self.df[name].update({"moddate":last_moddate})
@@ -166,25 +166,25 @@ class watch:
         mean_length = (x_length + y_length)/2
         max_agent_size = max(df["size"])
         min_agent_size = min(df["size"])
-        marker_max_size = 2.*(max_agent_size / max_agent_size**2)
+        # marker_max_size = 2.*(max_agent_size / 20**2)
         # df["size"]=df["size"].apply(lambda x:x/marker_max_size)
         fig = px.scatter(
             self.df[name]["data"],
             x=self.df[name]["data"]["x"],
             y=self.df[name]["data"]["y"],
-            color=self.df[name]["data"]["type"],
+            color=self.df[name]["data"]["agent_type"],
             size=self.df[name]["data"]["size"],
-            size_max=marker_max_size,
+            # size_max=marker_max_size,
             # size_min=min_agent_size,
-            hover_name = self.df[name]["data"]["type"],
+            hover_name = self.df[name]["data"]["agent_type"],
             render_mode='webgl',
-            width = 700*(x_length/y_length),
-            height = 700
+            width = self.df[name]["graph_size"],
+            height = self.df[name]["graph_size"]*(y_length / x_length)
         )
         fig.update_layout(
             title=dict(
                 text= '<b>'+name+'</b>',
-                y= 0.9,
+                y= .9,
                 x= 0.5,
                 xanchor= 'center',
                 yanchor= 'top',
@@ -263,55 +263,64 @@ class watch:
         return keys,figs
     def generate_scatter_graph(self,name):
 
-        # def NORMALIZE_SIZE(sizes):
-        #     min_size = min(sizes)
-        #     max_size = max(sizes)
-        #     diff = max_size - min_size
-        #     base_size = 5
-        #     std_sizes = []
-        #     for size in sizes:
-        #         std_size = base_size * (1 + (size-min_size)/diff)
-        #         std_sizes.append(std_size)
-        #     return std_sizes
+        x_length = max(self.df[name]["data"]["x"]) - min(self.df[name]["data"]["x"])
+        y_length = max(self.df[name]["data"]["y"]) - min(self.df[name]["data"]["y"])
 
+        df = self.df[name]["data"]
+        # length = x_length + y_length
+        # mean_length = (x_length + y_length)/2
+        max_agent_size = max(df["size"])
+        min_agent_size = min(df["size"])
+
+        ref_size = 2.*(max_agent_size / 20**2)
+        min_size = (min_agent_size / max_agent_size)*ref_size
+        print("ref ",ref_size, " min ",min_size)
         trace=go.Scatter(
             x=self.df[name]["data"]["x"],
             y=self.df[name]["data"]["y"],
-            mode='markers'
+            mode='markers',
+            marker=dict(color = self.df[name]["data"]["size"],
+                        size = self.df[name]["data"]["size"],
+                        sizeref = ref_size,
+                        sizemin = min_size,
+                        sizemode = "area"),
+            
+            text = self.df[name]["data"]["agent_name"]
         )
 
         layout = go.Layout(
-            # xaxis = dict(title = "X position", zeroline = False,range =[
-            #             min(self.df[name]["data"]["x"]) - 15,
-            #             max(self.df[name]["data"]["x"]) +15
-            #         ]),
-            # yaxis = dict(title = "Y position", zeroline = False,
-            #         range =[
-            #             min(self.df[name]["data"]["y"]) - 15,
-            #             max(self.df[name]["data"]["y"]) +15
-            #         ]),
-            # height=600,
-            # width=600,
-            # legend=dict(
-            #     x=1,
-            #     y=.95,
-            #     traceorder='normal',
-            #     font=dict(
-            #         family='sans-serif',
-            #         size=12,
-            #         color='#000'
-            #     ),
-            #     # bgcolor='#E2E2E2',
-            #     bordercolor='#FFFFFF',
-            #     borderwidth=1
-            # ),
+            xaxis = dict(title = "X position", zeroline = False, showgrid=False,
+                range =[
+                        min(self.df[name]["data"]["x"]) - x_length*0.1,
+                        max(self.df[name]["data"]["x"]) +x_length*0.1
+                    ]),
+            yaxis = dict(title = "Y position", zeroline = False,showgrid=False,
+                    range =[
+                        min(self.df[name]["data"]["y"]) - y_length*0.1,
+                        max(self.df[name]["data"]["y"]) +y_length*0.1
+                    ]),
+            width = 700*(x_length/y_length),
+            height = 700,
+            legend=dict(
+                x=1,
+                y=.95,
+                traceorder='normal',
+                font=dict(
+                    family='sans-serif',
+                    size=12,
+                    color='#000'
+                ),
+                # bgcolor='#E2E2E2',
+                bordercolor='#FFFFFF',
+                borderwidth=1
+            ),
             annotations=[
                 dict(
                     x=1.16,
                     y=1,
                     xref='paper',
                     yref='paper',
-                    text='<I> Cell types: </I>',
+                    text='<I> Agent types: </I>',
                     showarrow=False
                 )
             ]
@@ -330,27 +339,32 @@ class watch:
             # self.update_db()
 
             if len(req_graph_tags)>2:
-                class_choice = 'col s12 m6 l6'
+                class_choice = 'col s12 m6 l12'
             elif len(req_graph_tags) == 2:
-                class_choice = 'col s12 m6 l6'
+                class_choice = 'col s12 m6 l12'
             else:
                 class_choice = 'col s12'
             for req_graph_tag in req_graph_tags: # iterate through requested graph tags
-                if self.df[req_graph_tag]["type"] == "lines":
+                if self.df[req_graph_tag]["graph_type"] == "lines":
                     sub_graph,layout = self.generate_lines_graph(req_graph_tag)
                     graph = html.Div(dcc.Graph(
                                     id=req_graph_tag,
                                     figure={'data': sub_graph,'layout' : layout}
                                     ), className=class_choice)
                     graphs.append(graph)
-                elif self.df[req_graph_tag]["type"] == "scatter":
+                elif self.df[req_graph_tag]["graph_type"] == "scatter":
                     figure = self.express_based_scatter_graph(req_graph_tag)
                     graph = html.Div(dcc.Graph(
                                     id=req_graph_tag,
                                     figure=figure
                                     ), className=class_choice)
                     graphs.append(graph)
-                elif self.df[req_graph_tag]["type"] == "densitymap":
+                    # graph = html.Div(dcc.Graph(
+                    #                 id=req_graph_tag,
+                    #                 figure={'data': sub_graph,'layout' : layout}
+                    #                 ), className=class_choice)
+                    # graphs.append(graph)
+                elif self.df[req_graph_tag]["graph_type"] == "densitymap":
                     tags,figs = self.densitymap_plot(req_graph_tag)
                     for tag,figure in zip(tags,figs):
                         graph = html.Div(dcc.Graph(
