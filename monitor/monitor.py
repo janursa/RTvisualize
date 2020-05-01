@@ -18,21 +18,23 @@ external_scripts = ['https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/
 
 
 
-class Monitor:
+class watch:
     def __init__(self,info):
         #TODO: check that files, types, and tags have the same length
         self.df = info
     app = 0
     df = {}
-    graphs_record = {}
-    graph_specific_flags = {}
-    def process_data(self,df):
-        """
-        checks for the errors in the files
-        """
+    def process_data(self,df,fig_type):
         if "Unnamed: 0" in df.keys(): # processing some errors
             df = df.drop("Unnamed: 0", axis=1)
+        # add size if it's not there
+        if fig_type == "scatter":
+            if "size" not in df.keys():
+                fixed_size = np.ones(len(df["x"]))
+                df["size"] = fixed_size
 
+
+        
         return df
     def read_file(self,file):
         try:
@@ -41,28 +43,28 @@ class Monitor:
             # data = data.loc[0:100,:]
         except FileNotFoundError:
             print("Document is not found")
-        data = self.process_data(data)
         return data
     def update_db(self):
         any_update_flag = False  # if any of the files has changed
-        for name in self.df.keys():
+        for name in self.df.keys(): # main keys such as plot names
             file = self.df[name]["dir"]
             last_moddate = os.stat(file)[8] # last modification time
             if "moddate" not in self.df[name].keys() : # in this case, file is not upload for the first optimizer
                 data = self.read_file(file)
+                data = self.process_data(data,self.df[name]["type"])
+
                 self.df[name].update({"data":data})
                 self.df[name].update({"moddate":last_moddate})
                 any_update_flag = True
-                self.graph_specific_flags.update({name:True})
             elif self.df[name]["moddate"] != last_moddate:# if the new date is different
                 data = self.read_file(file)
+                data = self.process_data(data,self.df[name]["type"])
+
                 self.df[name].update({"data":data})
                 self.df[name].update({"moddate":last_moddate})
                 any_update_flag = True
-                self.graph_specific_flags.update({name:True})
 
             else:
-                self.graph_specific_flags.update({name:False})
                 continue
         return any_update_flag
     def set_frame(self):
@@ -159,9 +161,13 @@ class Monitor:
     def express_based_scatter_graph(self,name):
         x_length = max(self.df[name]["data"]["x"]) - min(self.df[name]["data"]["x"])
         y_length = max(self.df[name]["data"]["y"]) - min(self.df[name]["data"]["y"])
+
+        df = self.df[name]["data"]
         mean_length = (x_length + y_length)/2
-        max_agent_size = max(self.df[name]["data"]["size"])
-        marker_max_size = 290*(max_agent_size / mean_length)+2.7290
+        max_agent_size = max(df["size"])
+        min_agent_size = min(df["size"])
+        marker_max_size = 2.*(max_agent_size / max_agent_size**2)
+        # df["size"]=df["size"].apply(lambda x:x/marker_max_size)
         fig = px.scatter(
             self.df[name]["data"],
             x=self.df[name]["data"]["x"],
@@ -169,6 +175,7 @@ class Monitor:
             color=self.df[name]["data"]["type"],
             size=self.df[name]["data"]["size"],
             size_max=marker_max_size,
+            # size_min=min_agent_size,
             hover_name = self.df[name]["data"]["type"],
             render_mode='webgl',
             width = 700*(x_length/y_length),
@@ -329,7 +336,6 @@ class Monitor:
             else:
                 class_choice = 'col s12'
             for req_graph_tag in req_graph_tags: # iterate through requested graph tags
-                # if (self.graph_specific_flags[req_graph_tag]):
                 if self.df[req_graph_tag]["type"] == "lines":
                     sub_graph,layout = self.generate_lines_graph(req_graph_tag)
                     graph = html.Div(dcc.Graph(
@@ -337,7 +343,6 @@ class Monitor:
                                     figure={'data': sub_graph,'layout' : layout}
                                     ), className=class_choice)
                     graphs.append(graph)
-                    self.graphs_record.update({req_graph_tag:graph})
                 elif self.df[req_graph_tag]["type"] == "scatter":
                     figure = self.express_based_scatter_graph(req_graph_tag)
                     graph = html.Div(dcc.Graph(
@@ -345,7 +350,6 @@ class Monitor:
                                     figure=figure
                                     ), className=class_choice)
                     graphs.append(graph)
-                    self.graphs_record.update({req_graph_tag:graph})
                 elif self.df[req_graph_tag]["type"] == "densitymap":
                     tags,figs = self.densitymap_plot(req_graph_tag)
                     for tag,figure in zip(tags,figs):
@@ -358,10 +362,6 @@ class Monitor:
                     print("Graph type is not defined. It should be either lines or scatter")
                     sys.exit()
 
-
-                # else:
-                    # graph = self.graphs_record[req_graph_tag]
-                    # graphs.append(graph) # retreive it from previous attempt
             return graphs
 
         @self.app.callback(dash.dependencies.Output('flag','n_clicks'),
@@ -374,7 +374,8 @@ class Monitor:
             else:
                 raise dash.exceptions.PreventUpdate()
 
-    def watch(self):
+    def run(self):
+        # self.update_db();
         self.app = dash.Dash(__name__,
                             external_stylesheets = external_stylesheets,
                             external_scripts = external_scripts)
