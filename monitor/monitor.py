@@ -1,3 +1,9 @@
+"""Summary
+
+Attributes:
+    external_scripts (list): Description
+    external_stylesheets (TYPE): Description
+"""
 import  sys, time, os
 import dash
 import dash_core_components as dcc
@@ -16,12 +22,37 @@ external_scripts = ['https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/
 
 
 class watch:
+
+    """Summary
+    
+    Attributes:
+        app (int): Description
+        df (dict): Description
+    """
+    
     def __init__(self,info):
-        #TODO: check that files, types, and tags have the same length
+        """Initialize
+        
+        Args:
+            info (dict): The information of the plots in the requested format.
+        """
         self.df = info
     app = 0
     df = {}
     def process_data(self,df,fig_type):
+        """
+        Does the followings:
+            - Catches some errors in the input file.
+            - Addes generic size and type columns in case they are not given in the file. 
+                    For the case of thecustom plot, the process is skipped.
+        
+        Args:
+            df (DataFrame): Data read from the directory file. This data needs processing.
+            fig_type (TYPE): The type of the plot, i.e. lines and scatter.
+        
+        Returns:
+            DataFrame: The processed data.
+        """
         if "Unnamed: 0" in df.keys(): # processing some errors
             df = df.drop("Unnamed: 0", axis=1)
 
@@ -38,15 +69,30 @@ class watch:
                     fixed_agent_type = "agent"
                     df["agent_type"] = fixed_agent_type
         return df
-    def read_file(self,file):
+    def read_file(self,file_dir):
+        """Reads the data files in csv and converts them into pandas DataFrame.
+        
+        Args:
+            file (str): File directory
+        
+        Returns:
+            DataFrame: content of the file
+        """
         try:
             # print("*****reading the filee****")
-            data = pd.read_csv(file)
+            data = pd.read_csv(file_dir)
             # data = data.loc[0:100,:]
         except FileNotFoundError:
-            print("Document is not found")
+            print("Given file directory {} is invalid".format(file_dir))
+            sys.exit()
         return data
     def update_db(self):
+        """Updates the global database variable if there are changes in the files. 
+        It queries modification date of files and upon change in the modification date, it calles :py:meth:`read_file`.
+        
+        Returns:
+            TYPE: Description
+        """
         any_update_flag = False  # if any of the files has changed
         for name in self.df.keys(): # main keys such as plot names
             file = self.df[name]["graph_dir"]
@@ -98,6 +144,14 @@ class watch:
                 n_intervals = 0)
         ], className="container",style={'width':'98%','margin-left':10,'margin-right':10,'max-width':50000})
     def generate_lines_graph(self,name):
+        """Summary
+        
+        Args:
+            name (TYPE): Description
+        
+        Returns:
+            TYPE: Description
+        """
         line_types = ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot']
         traces = []
         i =0
@@ -161,6 +215,14 @@ class watch:
         )
         return traces, layout
     def express_based_scatter_graph(self,name):
+        """Summary
+        
+        Args:
+            name (TYPE): Description
+        
+        Returns:
+            TYPE: Description
+        """
         x_length = max(self.df[name]["data"]["x"]) - min(self.df[name]["data"]["x"])
         y_length = max(self.df[name]["data"]["y"]) - min(self.df[name]["data"]["y"])
 
@@ -211,6 +273,8 @@ class watch:
         fig.update_xaxes(automargin=True,showgrid=False,zeroline=False)
         return fig
     def callbacks(self):
+        """Summary
+        """
         @self.app.callback(
             dash.dependencies.Output('graphs','children'),
             [dash.dependencies.Input('list_of_plots', 'value'),
@@ -218,6 +282,15 @@ class watch:
             ]
             )
         def update_graph(req_graph_tags,n_clicks):
+            """Summary
+            
+            Args:
+                req_graph_tags (TYPE): Description
+                n_clicks (TYPE): Description
+            
+            Returns:
+                TYPE: Description
+            """
             graphs = []
             if len(req_graph_tags)>2:
                 class_choice = 'col s12 m6 l6'
@@ -259,6 +332,17 @@ class watch:
             [dash.dependencies.Input('time', 'n_intervals')]
         )
         def check(n_intervals):
+            """Summary
+            
+            Args:
+                n_intervals (TYPE): Description
+            
+            Returns:
+                TYPE: Description
+            
+            Raises:
+                dash.exceptions.PreventUpdate: Description
+            """
             any_update_flag = self.update_db()
             if any_update_flag:
                 return 1
@@ -266,6 +350,8 @@ class watch:
                 raise dash.exceptions.PreventUpdate()
 
     def run(self):
+        """Summary
+        """
         self.app = dash.Dash(__name__,
                             external_stylesheets = external_stylesheets,
                             external_scripts = external_scripts)
