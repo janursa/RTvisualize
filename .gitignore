@@ -1,0 +1,17 @@
+*.egg-info
+
+*.pyc
+
+*.gz
+
+*~
+
+
+.pytest_cache
+
+vv
+venv
+
+build
+dist
+plotly.egg-info/
