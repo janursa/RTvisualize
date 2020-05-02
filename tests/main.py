@@ -2,9 +2,11 @@
 import sys,os
 sys.path.append(os.path.join(os.getcwd(), "monitor"))
 from monitor import watch
+import monitor
 import plotly.express as px
 import pandas as pd
 
+# help(monitor)
 file = "/Users/matin/Downloads/testProjs/CA/build/outputs/agents_scatter_data.csv"
 data = pd.read_csv(file)
 def plot_1(data):
