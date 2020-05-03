@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Realtime monitoring'
+project = 'Realtime plotting'
 copyright = '2020, Jalil Nourisa'
 author = 'Jalil Nourisa'
 
@@ -29,13 +29,15 @@ release = '01.05.2020'
 
 from recommonmark.parser import CommonMarkParser
 
-source_parsers = {
-    '.md': CommonMarkParser,
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.txt': 'markdown',
+    '.md': 'markdown',
 }
 #
 
 
-
+#numpydoc_show_class_members = False
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -46,17 +48,21 @@ source_parsers = {
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
-]
+    ]
+import sys, os
 
+sys.path.append(os.path.abspath('sphinxext'))
+extensions = ['recommonmark',
+'sphinx.ext.autodoc',
+ 'sphinx.ext.viewcode',
+'sphinx.ext.doctest',
+'sphinx.ext.intersphinx',
+'sphinx.ext.todo',
+'sphinx.ext.coverage',
+'sphinx.ext.mathjax',
+'sphinx.ext.ifconfig',
+'sphinx.ext.viewcode',
+'sphinx.ext.githubpages']
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -93,8 +99,7 @@ pygments_style = None
 html_theme = 'haiku'
 numfig = True
 
-extensions = ['sphinx.ext.autodoc',
-'sphinx.ext.doctest',  'sphinx.ext.viewcode','sphinx.ext.mathjax']
+
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -121,7 +126,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'FEAssignmentdoc'
+htmlhelp_basename = 'Real time plotting'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -147,20 +152,20 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-    (master_doc, 'FEAssignment.tex', 'FE Assignment Documentation',
-     'Jalil Nourisa', 'manual'),
-]
+#latex_documents = [
+#    (master_doc, 'FEAssignment.tex', 'FE Assignment Documentation',
+#     'Jalil Nourisa', 'manual'),
+#]
 
 
 # -- Options for manual page output ------------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'feassignment', 'FE Assignment Documentation',
-     [author], 1)
-]
+#man_pages = [
+#    (master_doc, 'feassignment', 'FE Assignment Documentation',
+#     [author], 1)
+#]
 
 
 # -- Options for Texinfo output ----------------------------------------------
@@ -168,11 +173,11 @@ man_pages = [
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
-texinfo_documents = [
-    (master_doc, 'FEAssignment', 'FE Assignment Documentation',
-     author, 'FEAssignment', 'One line description of project.',
-     'Miscellaneous'),
-]
+#texinfo_documents = [
+#    (master_doc, 'FEAssignment', 'FE Assignment Documentation',
+#     author, 'FEAssignment', 'One line description of project.',
+#     'Miscellaneous'),
+#]
 
 
 # -- Options for Epub output -------------------------------------------------
