@@ -59,7 +59,7 @@ settings = {
 }
 watch(settings).run()
 ```
-See [] for 
+See [Documentation](https://janursa.github.io/realtime_plotting/) for further information and examples.
 
 ### Installation
 This package can be installed using pip:
