@@ -5,9 +5,9 @@ This program enables users to conveniently visualize their data in a real-time m
 
   * **Lines**: The program assumes that the X-axis shows steps/time intervals, and the data the Y-axis is given in columns. Separate lines are generated for each column with the label that appears as the column name.
   
-       | y1          | y2          |
-       | ----------- | ----------- |
-       | 1.2      | 5.2       |
+       | **y1** | **y2** |
+       | ------ | ------ |
+       | 1.2    | 5.2 |
        | 2.1   | 0.1        |
        | ...   | ...        |
 
