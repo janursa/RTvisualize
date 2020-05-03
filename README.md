@@ -81,8 +81,9 @@ This project is licensed under the MIT License - see the LICENSE.md file for det
 * Jalil Nourisa
 
 See also the list of contributors who participated in this project.
-### Acknowledgments
 
+### Acknowledgments
+Inspired by [sentdex](https://www.youtube.com/channel/UCfzlCWGWYyIQ0aLC5w48gBQ)
 
 
 
