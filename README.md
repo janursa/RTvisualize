@@ -1,4 +1,89 @@
 # Real time plotting
+This program enables users to conveniently visualize their data in a real-time manner using the power of Dash and Plotly. 
+### Quick start
+***install***
+```
+pip install realtime_visualization
+```
+***Usage type 1***: build-in plots
+```python
+from monitor import watch
+settings = {
+    "plot1": {
+            "graph_dir" = "path/to/CSV/file1.csv",
+            "graph_type" = scatter,
+            "graph_size" = 600
+           },
+    "plot2":{
+            "graph_dir" = "path/to/CSV/file2.csv",
+            "graph_type" = lines,
+            "graph_size" = 500,
+            "x-axis-moves" = True,
+            "x-axis-length" = 50
+    }
+}
+watch(settings).run()
+```
+***Usage type 2***: custom plots
+```python
+from monitor import watch
+def figure1(data):
+    fig = px.scatter(
+        data,
+        x=data["x"],
+        y=data["y"],
+        size=data["size"]
+    )
+    return fig
+def figure2(data):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=data["x1"], y=data["y1"],
+                        mode='lines',
+                        name='lines'))
+    fig.add_trace(go.Scatter(x=data["x2"], y=data["y2"],
+                        mode='lines+markers',
+                        name='lines+markers'))
+    return fig
+     
+settings = {
+    "plot1": {
+            "graph_dir" = "path/to/CSV/file1.csv",
+            "graph_type" = custom,
+            "figure" = figure1
+           },
+    "plot2":{
+            "graph_dir" = "path/to/CSV/file2.csv",
+            "graph_type" = custom,
+            "figure" = figure2
+    }
+}
+watch(settings).run()
+```
+See [] for 
+
+### Installation
+This package can be installed using pip:
+```
+pip install realtime_plotting
+```
+or conda:
+```
+conda install -c realtime_plotting
+```
+or download the package and command:
+```
+python install setup.py
+```
+### License
+This project is licensed under the MIT License - see the LICENSE.md file for details
+
+### Authors
+* Jalil Nourisa
+
+See also the list of contributors who participated in this project.
+### Acknowledgments
+
+
 This program enables users to conveniently visualize their data in a real-time manner using the power of Dash and Plotly. The program reads the data from CSV files and generates graphs on a web browser. The graphs will be updated automatically upon changes to the files. Currently, there are two ways of using this code:
 
 * **Using build-in plots:** So far, there are only two types of plots that are available, i.e. [lines and scatter](https://plotly.com/python/line-and-scatter/). Using this approach, the format of data given in the files must be one the followings:
