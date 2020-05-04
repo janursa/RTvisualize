@@ -26,6 +26,8 @@ author = 'Jalil Nourisa'
 
 release = '01.05.2020'
 
+def setup(app):
+    app.add_css_file('css/custom.css')  # may also be an URL
 
 from recommonmark.parser import CommonMarkParser
 

@@ -5,10 +5,13 @@ from monitor import watch
 import monitor
 import plotly.express as px
 import pandas as pd
+import plotly.graph_objs as go
 
 # help(monitor)
 file = "/Users/matin/Downloads/testProjs/CA/build/outputs/agents_scatter_data.csv"
-data = pd.read_csv(file)
+agents_traj_data = "/Users/matin/Downloads/testProjs/CA/build/outputs/agents_count_data.csv"
+
+data = pd.read_csv(agents_traj_data)
 def plot_1(data):
     fig = px.scatter(
         data,
@@ -21,7 +24,7 @@ def plot_1(data):
         hover_name = data["type"],
         render_mode='webgl',
         width = 700,
-        height = 700
+        height = 400
     )
     # fig.update_layout(
     #     title=dict(
@@ -50,9 +53,51 @@ def plot_1(data):
     fig.update_yaxes(automargin=True,showgrid=False,zeroline=False)
     fig.update_xaxes(automargin=True,showgrid=False,zeroline=False)
     return fig
-fig = plot_1(data)
+def plot_2(data):
+    fig = go.Figure()
+    line_types = ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot']
+    i =0
+    for key,value in data.items():
+        print(key)
+        fig.add_trace(go.Scatter(
+            y=value,
+            name=key,
+            line = dict(width=3, dash=line_types[i])
+        ))
+        i+=1
+
+    fig.update_layout(
+        
+        xaxis = dict(title = "Intervals", zeroline = False,range=
+                    [min(data.index) - 0.5,
+                     max(data.index) + 0.5]),
+        yaxis = dict(title = "Values", zeroline = False, range =
+                    [min([min(data[key]) for key in data.keys()]) - 0.5,
+                     max([max(data[key]) for key in data.keys()]) + 0.5]),
+        legend=dict(
+            x=1,
+            y=.95,
+            traceorder='normal',
+            font=dict(
+                family='sans-serif',
+                size=12,
+                color='#000'
+            ),
+            bordercolor='#FFFFFF',
+            borderwidth=1
+        ),
+        margin=dict(
+            l=50,
+            r=50,
+            b=100,
+            t=100,
+            pad=4
+        )
+    )
+    return fig
+fig = plot_2(data)
 # fig.save("pic.png")
-fig.write_image("fig1.svg")
+fig.write_image("sphnix/source/lines.svg")
 # fig.show()
 # # sys.path.append(, "lib"))
 if __name__ == "__main__":
@@ -66,7 +111,6 @@ if __name__ == "__main__":
         "agents_scatter_data": {
             "figure": plot_1,
             "graph_type": "custom",
-            "graph_size": 1000,
             "graph_dir": agents_scatter_data
         },
         "agents_count_data": {
