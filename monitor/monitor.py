@@ -109,18 +109,18 @@ class plots:
         x_length = max(data["x"]) - min(data["x"])
         y_length = max(data["y"]) - min(data["y"])
 
-        max_agent_size = max(data["size"])
-        min_agent_size = min(data["size"])
-        marker_max_size = 2.*(max_agent_size / 20**2)
+        max_size = max(data["size"])
+        # min_agent_size = min(data["size"])
+        marker_max_size = 2.*(max_size / 20**2)
         fig = px.scatter(
             data,
             x = data["x"],
             y = data["y"],
-            color = data["agent_type"],
+            color = data["type"],
             size = data["size"],
             size_max = marker_max_size,
             # size_min=min_agent_size,
-            hover_name = data["agent_type"],
+            hover_name = data["type"],
             render_mode='webgl',
             width = data["graph_size"],
             height = data["graph_size"]*(y_length / x_length)
@@ -205,9 +205,9 @@ class watch:
                     fixed_size = np.ones(len(df["x"]))
                     df["size"] = fixed_size
         
-                if "agent_type" not in df.keys():
-                    fixed_agent_type = "agent"
-                    df["agent_type"] = fixed_agent_type
+                if "type" not in df.keys():
+                    fixed_type = "agent"
+                    df["type"] = fixed_type
         return df
     def read(self,file_dir):
         """Reads the data files in csv and converts them into pandas DataFrame.

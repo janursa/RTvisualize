@@ -14,42 +14,45 @@ def plot_1(data):
         data,
         x=data["x"],
         y=data["y"],
-        color=data["agent_type"],
+        color=data["type"],
         size=data["size"],
-        size_max=5,
+        size_max=15,
         # size_min=min_agent_size,
-        hover_name = data["agent_type"],
+        hover_name = data["type"],
         render_mode='webgl',
         width = 700,
         height = 700
     )
-    fig.update_layout(
-        title=dict(
-            text= '<b>'+"custom fig"+'</b>',
-            y= .9,
-            x= 0.5,
-            xanchor= 'center',
-            yanchor= 'top',
-            font=dict(
-                family='sans-serif',
-                size=20,
-                color='#100'
-            )),
-        # autosize=False,
-        # width=1200,
-        # height=1200
-        margin=dict(
-            l=50,
-            r=150,
-            b=100,
-            t=100,
-            pad=4
-        )
-        # paper_bgcolor="#b6e2f5"
-        )
+    # fig.update_layout(
+    #     title=dict(
+    #         text= '<b>'+"custom fig"+'</b>',
+    #         y= .9,
+    #         x= 0.5,
+    #         xanchor= 'center',
+    #         yanchor= 'top',
+    #         font=dict(
+    #             family='sans-serif',
+    #             size=20,
+    #             color='#100'
+    #         )),
+    #     # autosize=False,
+    #     # width=1200,
+    #     # height=1200
+    #     margin=dict(
+    #         l=50,
+    #         r=150,
+    #         b=100,
+    #         t=100,
+    #         pad=4
+    #     )
+    #     # paper_bgcolor="#b6e2f5"
+    #     )
     fig.update_yaxes(automargin=True,showgrid=False,zeroline=False)
     fig.update_xaxes(automargin=True,showgrid=False,zeroline=False)
     return fig
+fig = plot_1(data)
+# fig.save("pic.png")
+fig.write_image("fig1.svg")
 # fig.show()
 # # sys.path.append(, "lib"))
 if __name__ == "__main__":
@@ -81,4 +84,4 @@ if __name__ == "__main__":
         #     "dir": patches_ph_data
         # }
     }
-    watch(info).run() #TODO: try to update the figure upon a change in these files
+    # watch(info).run() #TODO: try to update the figure upon a change in these files
