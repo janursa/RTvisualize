@@ -7,7 +7,7 @@ pip install realtime_visualization
 ```
 ***Usage type 1, build-in plots***: in this approach, all you need is to format the CSV files as instructed, determine the type of plot together with some other options and run the program.
 ```python
-from monitor import watch
+from realtime import monitor
 settings = {
     "plot1": {
             "graph_dir" = "path/to/CSV/file1.csv",
@@ -22,11 +22,11 @@ settings = {
             "x-axis-length" = 50
     }
 }
-watch(settings).run()
+monitor.watch(settings).run()
 ```
 ***Usage type 2, custom plots***: this approach enables the user to construct the plot in a desired way and pass it to the program together with CSV file address and some other options.
 ```python
-from monitor import watch
+from realtime import monitor
 def figure1(data):
     fig = px.scatter(
         data,
@@ -57,18 +57,18 @@ settings = {
             "figure" = figure2
     }
 }
-watch(settings).run()
+monitor.watch(settings).run()
 ```
-See [Documentation](https://janursa.github.io/realtime_plotting/) for further information and examples.
+See [Documentation](https://janursa.github.io/realtime_visualization/) for further information and examples.
 
 ### Installation
 This package can be installed using pip:
 ```
-pip install realtime_plotting
+pip install realtime_visualization
 ```
 or conda:
 ```
-conda install -c realtime_plotting
+conda install -c realtime_visualization
 ```
 or download the package and command:
 ```

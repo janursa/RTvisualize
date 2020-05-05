@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>realtime package &#8212; Realtime visualization 01.05.2020 documentation</title>
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="How to use" href="howToUse.html" />
+    <link rel="prev" title="realtime" href="modules.html" /> 
+  </head><body>
+      <div class="header" role="banner"><h1 class="heading"><a href="index.html">
+          <span>Realtime visualization 01.05.2020 documentation</span></a></h1>
+        <h2 class="heading"><span>realtime package</span></h2>
+      </div>
+      <div class="topnav" role="navigation" aria-label="top navigation">
+      
+        <p>
+        «&#160;&#160;<a href="modules.html">realtime</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="howToUse.html">How to use</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content" role="main">
+        
+        
+  <div class="section" id="realtime-package">
+<h1>realtime package<a class="headerlink" href="#realtime-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-realtime.buildin">
+<span id="realtime-buildin-module"></span><h2>realtime.buildin module<a class="headerlink" href="#module-realtime.buildin" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="realtime.buildin.plots">
+<em class="property">class </em><code class="sig-prename descclassname">realtime.buildin.</code><code class="sig-name descname">plots</code><a class="reference internal" href="_modules/realtime/buildin.html#plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#realtime.buildin.plots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py attribute">
+<dt id="realtime.buildin.plots.line_types">
+<code class="sig-name descname">line_types</code><em class="property"> = ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot']</em><a class="headerlink" href="#realtime.buildin.plots.line_types" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="realtime.buildin.plots.lines">
+<em class="property">static </em><code class="sig-name descname">lines</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">x_limits</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/realtime/buildin.html#plots.lines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#realtime.buildin.plots.lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs a lines plot using Plotly Go</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>data (DataFrame): data in the form of Pandas DataFrame
+name (str): the title of the plot
+x_limits (list): min and max of x axis</p>
+</dd>
+<dt>Returns:</dt><dd><p>Figure: Returns a figure object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="realtime.buildin.plots.scatter">
+<code class="sig-name descname">scatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/realtime/buildin.html#plots.scatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#realtime.buildin.plots.scatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs a scatter plot using Plotly express</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>data (DataFrame): data in the form of Pandas DataFrame
+name (str): the title of the plot</p>
+</dd>
+<dt>Returns:</dt><dd><p>Figure: Returns a figure object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-realtime.monitor">
+<span id="realtime-monitor-module"></span><h2>realtime.monitor module<a class="headerlink" href="#module-realtime.monitor" title="Permalink to this headline">¶</a></h2>
+<p>This module is designed to visualize csv files on a browser in a real time fashion. 
+Author: Jalil Nourisa</p>
+<dl class="py class">
+<dt id="realtime.monitor.watch">
+<em class="property">class </em><code class="sig-prename descclassname">realtime.monitor.</code><code class="sig-name descname">watch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">info</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/realtime/monitor.html#watch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#realtime.monitor.watch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>This is the main class to read the files, construct plots and monitor changes.
+For documentation, see docs/build/html/index.html</p>
+<dl class="py attribute">
+<dt id="realtime.monitor.watch.app">
+<code class="sig-name descname">app</code><em class="property"> = 0</em><a class="headerlink" href="#realtime.monitor.watch.app" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="realtime.monitor.watch.callbacks">
+<code class="sig-name descname">callbacks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/realtime/monitor.html#watch.callbacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#realtime.monitor.watch.callbacks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains two call back functions. py:<code class="xref py py-meth docutils literal notranslate"><span class="pre">update_graph()</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="realtime.monitor.watch.df">
+<code class="sig-name descname">df</code><em class="property"> = {}</em><a class="headerlink" href="#realtime.monitor.watch.df" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="realtime.monitor.watch.frame">
+<code class="sig-name descname">frame</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/realtime/monitor.html#watch.frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#realtime.monitor.watch.frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lays out the HTML and defines holders</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="realtime.monitor.watch.postprocess">
+<code class="sig-name descname">postprocess</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">fig_type</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/realtime/monitor.html#watch.postprocess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#realtime.monitor.watch.postprocess" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><ul class="simple">
+<li><p>Catches some errors in the input file.</p></li>
+<li><dl class="simple">
+<dt>Addes generic size and type columns in case they are not given in the file. </dt><dd><p>For the case of custom plots, the process is skipped.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt>Args:</dt><dd><p>df (DataFrame): Data read from the directory file. This data needs processing.
+fig_type (TYPE): The type of the plot, i.e. lines and scatter.</p>
+</dd>
+<dt>Returns:</dt><dd><p>DataFrame: The processed data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="realtime.monitor.watch.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_dir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/realtime/monitor.html#watch.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#realtime.monitor.watch.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the data files in csv and converts them into pandas DataFrame.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>file_dir (string): file directory</p>
+</dd>
+<dt>Returns:</dt><dd><p>DataFrame: content of the file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="realtime.monitor.watch.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/realtime/monitor.html#watch.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#realtime.monitor.watch.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="realtime.monitor.watch.update_db">
+<code class="sig-name descname">update_db</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/realtime/monitor.html#watch.update_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#realtime.monitor.watch.update_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the global database in case there are changes in the files. 
+It queries modification date of files and upon change in the modification date, it calles <a class="reference internal" href="#realtime.monitor.watch.read" title="realtime.monitor.watch.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a>,
+to import the new data and then <a class="reference internal" href="#realtime.monitor.watch.postprocess" title="realtime.monitor.watch.postprocess"><code class="xref py py-meth docutils literal notranslate"><span class="pre">postprocess()</span></code></a> to process.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>bool: if any changes occures, this flag will be true</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-realtime">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-realtime" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
+      
+        <p>
+        «&#160;&#160;<a href="modules.html">realtime</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="howToUse.html">How to use</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Jalil Nourisa.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+    </div>
+  </body>
+</html>

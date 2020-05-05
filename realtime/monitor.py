@@ -5,6 +5,8 @@ Author: Jalil Nourisa
 
 """
 import  sys, time, os
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -14,6 +16,8 @@ import plotly.express as px
 import pandas as pd
 import plotly
 import numpy as np
+
+from .buildin import plots
 
 def _get_docs_index_path(): # returns dir of the documentation file
     # my_package_root = os.path.dirname(os.path.dirname(__file__))
@@ -33,125 +37,6 @@ class _externals:
     def get_scripts():
         return ['https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js']
 
-class plots:
-    line_types = ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot']
-    @staticmethod
-    def lines(data,name):
-        """Constructs a lines plot using Plotly Go
-
-        Args:
-            data (DataFrame): data in the form of Pandas DataFrame
-            name (str): the title of the plot
-        
-        Returns:
-            Figure: Returns a figure object
-        """
-        
-        traces = []
-        i =0
-        for key,value in data.items():
-            traces.append(go.Scatter(
-                y=value,
-                name=key,
-                line = dict(width=3, dash=plots.line_types[i])
-            ))
-            i+=1
-
-        layout = go.Layout(
-            title=dict(
-                text= '<b>'+name+'</b>',
-                y= 0.9,
-                x= 0.5,
-                xanchor= 'center',
-                yanchor= 'top',
-                font=dict(
-                    family='sans-serif',
-                    size=20,
-                    color='#100'
-                )),
-            xaxis = dict(title = "Intervals", zeroline = False,range=
-                        [min(data.index) - 0.5,
-                         max(data.index) + 0.5]),
-            yaxis = dict(title = "Values", zeroline = False, range =
-                        [min([min(data[key]) for key in data.keys()]) - 0.5,
-                         max([max(data[key]) for key in data.keys()]) + 0.5]),
-            legend=dict(
-                x=1,
-                y=.95,
-                traceorder='normal',
-                font=dict(
-                    family='sans-serif',
-                    size=12,
-                    color='#000'
-                ),
-                bordercolor='#FFFFFF',
-                borderwidth=1
-            ),
-            margin=dict(
-                l=50,
-                r=50,
-                b=100,
-                t=100,
-                pad=4
-            )
-        )
-        return traces, layout
-    def scatter(data,name):
-        """Constructs a scatter plot using Plotly express
-        
-        Args:
-            data (DataFrame): data in the form of Pandas DataFrame
-            name (str): the title of the plot
-        
-        Returns:
-            Figure: Returns a figure object
-        """
-        x_length = max(data["x"]) - min(data["x"])
-        y_length = max(data["y"]) - min(data["y"])
-
-        max_size = max(data["size"])
-        # min_agent_size = min(data["size"])
-        marker_max_size = 2.*(max_size / 20**2)
-        fig = px.scatter(
-            data,
-            x = data["x"],
-            y = data["y"],
-            color = data["type"],
-            size = data["size"],
-            size_max = marker_max_size,
-            # size_min=min_agent_size,
-            hover_name = data["type"],
-            render_mode='webgl',
-            width = data["graph_size"],
-            height = data["graph_size"]*(y_length / x_length)
-        )
-        fig.update_layout(
-            title=dict(
-                text= '<b>'+name+'</b>',
-                y= .9,
-                x= 0.5,
-                xanchor= 'center',
-                yanchor= 'top',
-                font=dict(
-                    family='sans-serif',
-                    size=20,
-                    color='#100'
-                )),
-            # autosize=False,
-            # width=1200,
-            # height=1200
-            margin=dict(
-                l=50,
-                r=150,
-                b=100,
-                t=100,
-                pad=4
-            )
-            # paper_bgcolor="#b6e2f5"
-            )
-        fig.update_yaxes(automargin=True,showgrid=False,zeroline=False)
-        fig.update_xaxes(automargin=True,showgrid=False,zeroline=False)
-        return fig
 
 @_docstring_parameter(_get_docs_index_path())
 class watch:
@@ -316,7 +201,14 @@ class watch:
                     graphs.append(graph)
                 else:
                     if self.df[req_graph_tag]["graph_type"] == "lines":
-                        sub_graph,layout = plots.lines(self.df[req_graph_tag]["data"],req_graph_tag)
+                        max_x = max(self.df[req_graph_tag]["data"].index)
+                        if self.df[req_graph_tag]["x-axis-moves"] == True:
+                            min_x = max_x - self.df[req_graph_tag]["x-axis-length"]
+                        else:
+                            min_x = min(self.df[req_graph_tag]["data"].index)
+                        x_limits = [min_x,max_x]
+
+                        sub_graph,layout = plots.lines(self.df[req_graph_tag]["data"],req_graph_tag,x_limits)
                         graph = html.Div(dcc.Graph(
                                         id=req_graph_tag,
                                         figure={'data': sub_graph,'layout' : layout}

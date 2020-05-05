@@ -1,7 +1,7 @@
-monitor
-=======
+realtime
+========
 
 .. toctree::
    :maxdepth: 4
 
-   monitor
+   realtime

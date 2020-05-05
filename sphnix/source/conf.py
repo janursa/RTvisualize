@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Realtime plotting'
+project = 'Realtime visualization'
 copyright = '2020, Jalil Nourisa'
 author = 'Jalil Nourisa'
 
