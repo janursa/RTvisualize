@@ -1,5 +1,5 @@
 # Real time visualization
-This program enables users to conveniently visualize their data in a real-time manner using the power of Dash and Plotly. The program reads the data from CSV files and generates graphs on a web browser. The graphs will be updated automatically upon changes to the files. 
+This program enables users to conveniently visualize their data in a real-time manner using the power of Dash and Plotly. The program reads the data from CSV files and generates graphs on a web browser. The graphs will be updated automatically upon changes to the files.
 
 ### Quick start
 ```
@@ -44,7 +44,7 @@ def figure2(data):
                         mode='lines+markers',
                         name='lines+markers'))
     return fig
-     
+
 settings = {
     "plot1": {
             "graph_dir" = "path/to/CSV/file1.csv",
@@ -84,6 +84,3 @@ See also the list of contributors who participated in this project.
 
 ### Acknowledgments
 Inspired by [sentdex](https://www.youtube.com/channel/UCfzlCWGWYyIQ0aLC5w48gBQ)
-
-
-
