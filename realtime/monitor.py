@@ -1,5 +1,4 @@
 
-
 """This module is designed to visualize csv files on a browser in a real time fashion. 
 Author: Jalil Nourisa
 

@@ -1,3 +1,6 @@
+import plotly.graph_objs as go
+import plotly.express as px
+import numpy as np
 class plots:
     line_types = ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot']
     @staticmethod

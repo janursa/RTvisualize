@@ -28,6 +28,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/janursa/realtime_visualization",
     packages=setuptools.find_packages(),
+    install_requires=['dash >=1.12', 'plotly >= 4.6.0', 'pandas >= 1.0.3', 'numpy >= 1.18.4'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
