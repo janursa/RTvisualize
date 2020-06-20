@@ -4,8 +4,6 @@ Author: Jalil Nourisa
 
 """
 import  sys, time, os
-__location__ = os.path.realpath(
-    os.path.join(os.getcwd(), os.path.dirname(__file__)))
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -84,7 +82,7 @@ class watch:
             pass
         else: # add these items if custom plot is not given
             # add size if it's not there
-            if fig_type == "scatter":  #if it's a scatter plot, add missin items, i.e. size and type
+            if fig_type == "scatter" or fig_type == "scatter3":  #if it's a scatter plot, add missin items, i.e. size and type
                 if "size" not in df.keys():
                     fixed_size = np.ones(len(df["x"]))
                     df["size"] = fixed_size
@@ -155,7 +153,13 @@ class watch:
                          value=[s for s in self.df.keys()],
                          multi=True
                          ),
+             dcc.RadioItems(
+                id='lock-zoom',
+                options=[{'label': i, 'value': i} for i in ['Lock View', 'Refresh View']],
+                value='Lock View'
+            ),
             html.Button(id='flag', children='update'),
+
             html.Div(children=html.Div(id='graphs'), className='row'),
 
             dcc.Interval(
@@ -214,14 +218,21 @@ class watch:
                                         ), className=class_choice)
                         graphs.append(graph)
                     elif self.df[req_graph_tag]["graph_type"] == "scatter":
-                        figure = plots.scatter(self.df[req_graph_tag]["data"],req_graph_tag)
+                        figure = plots.scatter(self.df[req_graph_tag]["data"],req_graph_tag,self.df[req_graph_tag]["graph_size"])
+                        graph = html.Div(dcc.Graph(
+                                        id=req_graph_tag,
+                                        figure=figure
+                                        ), className=class_choice)
+                        graphs.append(graph)
+                    elif self.df[req_graph_tag]["graph_type"] == "scatter3":
+                        figure = plots.scatter3(self.df[req_graph_tag]["data"],req_graph_tag,self.df[req_graph_tag]["graph_size"])
                         graph = html.Div(dcc.Graph(
                                         id=req_graph_tag,
                                         figure=figure
                                         ), className=class_choice)
                         graphs.append(graph)
                     else:
-                        print("Graph type is not defined. It should be either lines or scatter")
+                        print("Graph type is not defined. It should be either lines or scatter(3)")
                         sys.exit()
 
             return graphs
