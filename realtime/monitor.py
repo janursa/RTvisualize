@@ -7,7 +7,7 @@ import  sys, time, os
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from   dash.dependencies import Input, Output
+from   dash.dependencies import Input, Output, State
 import plotly.graph_objs as go
 import plotly.express as px
 import pandas as pd
@@ -15,6 +15,7 @@ import plotly
 import numpy as np
 
 from .buildin import plots
+import copy
 
 def _get_docs_index_path(): # returns dir of the documentation file
     # my_package_root = os.path.dirname(os.path.dirname(__file__))
@@ -48,7 +49,19 @@ class watch:
         Args:
             info (dict): The information of the plots entered by the user.
         """
+        # generated FIGs tagged with the figure name
+        self.FIGS = {} 
+        self.relayoutDatas = {} 
+        # database
         self.df = info 
+        # class type for the arrangment of graphs
+        if len(self.df.keys())>2:
+            class_choice = 'col s12 m6 l6'
+        elif len(self.df.keys()) == 2:
+            class_choice = 'col s12 m6 l6'
+        else:
+            class_choice = 'col s12'
+        self.class_choice = class_choice
 
         self.app = dash.Dash(__name__,
                             external_stylesheets = _externals.get_stylesheets(),
@@ -57,11 +70,13 @@ class watch:
         self.app.css.config.serve_locally = True
         self.app.scripts.config.serve_locally = True
 
+        self.update_iteration = 0 # to keep the record that how many time graphs are updated
+        self.initialize()
+    def initialize(self):
+        self.update_db()
         self.frame()
         self.callbacks()
 
-    app = 0
-    df = {}
     def postprocess(self,df,fig_type):
         """
             - Catches some errors in the input file.
@@ -122,7 +137,6 @@ class watch:
             if "moddate" not in self.df[name].keys() : # in this case, file is not upload for the first optimizer
                 data = self.read(file)
                 data = self.postprocess(data,self.df[name]["graph_type"])
-
                 self.df[name].update({"data":data})
                 self.df[name].update({"moddate":last_moddate})
                 any_update_flag = True
@@ -141,124 +155,115 @@ class watch:
         """
         Lays out the HTML and defines holders
         """
-        self.app.layout = html.Div([
-            html.Div([
+        layout_objects = []
+        layout_objects.append(html.Div([
                 html.H2('List of plots',
                         style={'float': 'left',
                                }),
-                ]),
-            dcc.Dropdown(id='list_of_plots',
+                ]))
+        layout_objects.append(dcc.Dropdown(id='list_of_plots',
                          options=[{'label': s, 'value': s}
                                   for s in self.df.keys()],
                          value=[s for s in self.df.keys()],
                          multi=True
-                         ),
-             dcc.RadioItems(
-                id='lock-zoom',
-                options=[{'label': i, 'value': i} for i in ['Lock View', 'Refresh View']],
-                value='Lock View'
-            ),
-            html.Button(id='flag', children='update'),
-
-            html.Div(children=html.Div(id='graphs'), className='row'),
-
-            dcc.Interval(
+                         ))
+        layout_objects.append(dcc.Interval(
                 id='time',
                 interval=1000,
-                n_intervals = 0)
-        ], className="container",style={'width':'98%','margin-left':10,'margin-right':10,'max-width':50000})
+                n_intervals = 0))
+        
+        layout_objects.append(html.Div(id="graphs",children=self.generate_graphs(self.df.keys()), className='row'))
+        self.app.layout = html.Div(layout_objects, className="container",style={'width':'98%','margin-left':10,'margin-right':10,'max-width':50000})
+
     def callbacks(self):
-        """Contains two call back functions. py::meth:`update_graph`.
-        """
+        states = []
+        for key in self.df.keys():
+            states.append(dash.dependencies.State(key,'relayoutData'))
+        
         @self.app.callback(
             dash.dependencies.Output('graphs','children'),
-            [dash.dependencies.Input('list_of_plots', 'value'),
-            dash.dependencies.Input('flag','n_clicks')
-            ]
+            [dash.dependencies.Input('time', 'n_intervals'),dash.dependencies.Input('list_of_plots', 'value')],
+            states
             )
-        def update_graph(req_graph_tags,n_clicks):
-            """Summary
-            
-            Args:
-                req_graph_tags (TYPE): Description
-                n_clicks (TYPE): Description
-            
-            Returns:
-                TYPE: Description
-            """
-            graphs = []
-            if len(req_graph_tags)>2:
-                class_choice = 'col s12 m6 l6'
-            elif len(req_graph_tags) == 2:
-                class_choice = 'col s12 m6 l6'
-            else:
-                class_choice = 'col s12'
-            for req_graph_tag in req_graph_tags: # iterate through requested graph tags
-                if self.df[req_graph_tag]["graph_type"] == "custom": # if the plot is given, just add it to the graph list
-                    figure_func = self.df[req_graph_tag]["figure"]
-                    figure = figure_func(self.df[req_graph_tag]["data"])
-                    graph = html.Div(dcc.Graph(
-                                    id=req_graph_tag,
-                                    figure=figure
-                                    ), className=class_choice)
-                    graphs.append(graph)
-                else:
-                    if self.df[req_graph_tag]["graph_type"] == "lines":
-                        max_x = max(self.df[req_graph_tag]["data"].index)
-                        if self.df[req_graph_tag]["x-axis-moves"] == True:
-                            min_x = max_x - self.df[req_graph_tag]["x-axis-length"]
-                        else:
-                            min_x = min(self.df[req_graph_tag]["data"].index)
-                        x_limits = [min_x,max_x]
+        def update_graph(n_intervals,graph_tags,*relayoutDatas):
+            i = 0
+            for key in self.df.keys():
+                relayoutData = relayoutDatas[i]
+                if relayoutData:
+                    if 'xaxis.range[0]' in relayoutData or 'scene.camera' in relayoutData:
+                        self.relayoutDatas.update({key:relayoutData})
+                i+=1
 
-                        sub_graph,layout = plots.lines(self.df[req_graph_tag]["data"],req_graph_tag,x_limits)
-                        graph = html.Div(dcc.Graph(
-                                        id=req_graph_tag,
-                                        figure={'data': sub_graph,'layout' : layout}
-                                        ), className=class_choice)
-                        graphs.append(graph)
-                    elif self.df[req_graph_tag]["graph_type"] == "scatter":
-                        figure = plots.scatter(self.df[req_graph_tag]["data"],req_graph_tag,self.df[req_graph_tag]["graph_size"])
-                        graph = html.Div(dcc.Graph(
-                                        id=req_graph_tag,
-                                        figure=figure
-                                        ), className=class_choice)
-                        graphs.append(graph)
-                    elif self.df[req_graph_tag]["graph_type"] == "scatter3":
-                        figure = plots.scatter3(self.df[req_graph_tag]["data"],req_graph_tag,self.df[req_graph_tag]["graph_size"])
-                        graph = html.Div(dcc.Graph(
-                                        id=req_graph_tag,
-                                        figure=figure
-                                        ), className=class_choice)
-                        graphs.append(graph)
-                    else:
-                        print("Graph type is not defined. It should be either lines or scatter(3)")
-                        sys.exit()
-
-            return graphs
-
-        @self.app.callback(dash.dependencies.Output('flag','n_clicks'),
-            [dash.dependencies.Input('time', 'n_intervals')]
-        )
-        def check(n_intervals):
-            """If any of the files are changed, sets the buttom flag to 1 (a change) to intrigue py::meth:`update_graph`. 
-            
-            Args:
-                n_intervals (int): time
-            
-            Returns:
-                int: value of the buttom 
-            
-            Raises:
-                dash.exceptions.PreventUpdate
-                if there is no update, simply raise an exception to prevent alteration of the button value.
-            """
             any_update_flag = self.update_db()
-            if any_update_flag:
-                return 1
-            else:
+            if self.update_iteration < 10:
+                self.update_iteration +=1
+                return self.generate_graphs(graph_tags)
+                # return new_figure
+            elif not any_update_flag:
                 raise dash.exceptions.PreventUpdate()
+            else:
+                return self.generate_graphs(graph_tags)
+    def generate_graphs(self,graph_tags):
+        graphs = []
+        for graph_tag in graph_tags: # iterate through requested graph names
+            if self.df[graph_tag]["graph_type"] == "custom": # if the plot is given, just add it to the graph list
+                figure_func = self.df[graph_tag]["figure"]
+                FIG = figure_func(self.df[graph_tag]["data"])
 
+                
+            else:
+                if self.df[graph_tag]["graph_type"] == "lines":
+                    max_x = max(self.df[graph_tag]["data"].index)
+                    if self.df[graph_tag]["x-axis-moves"] == True:
+                        min_x = max_x - self.df[graph_tag]["x-axis-length"]
+                    else:
+                        min_x = min(self.df[graph_tag]["data"].index)
+                    x_limits = [min_x,max_x]
+
+                    sub_graph,layout = plots.lines(self.df[graph_tag]["data"],graph_tag,x_limits)
+                    FIG = {'data': sub_graph,'layout' : layout}
+
+                elif self.df[graph_tag]["graph_type"] == "scatter":
+                    FIG = plots.scatter(self.df[graph_tag]["data"],graph_tag,self.df[graph_tag]["graph_size"])
+
+                elif self.df[graph_tag]["graph_type"] == "scatter3":
+                    FIG = plots.scatter3(self.df[graph_tag]["data"],graph_tag,self.df[graph_tag]["graph_size"])
+
+                else:
+                    print("Graph type is not defined. It should be either lines or scatter(3)")
+                    sys.exit()
+            
+            # if graph_tag in self.FIGS:
+            #     watch.copy_settings(self.FIGS[graph_tag],FIG)
+            if graph_tag in self.relayoutDatas:
+                relayout_data = self.relayoutDatas[graph_tag]
+                if  relayout_data:
+                    watch.copy_graph_layout(relayout_data,FIG)
+            self.FIGS.update({graph_tag:FIG})
+
+            # graphs.append(graph)
+        graphs = []
+        for key in graph_tags:
+            graphs.append(html.Div(dcc.Graph(
+                id=key,
+                figure=self.FIGS[key]
+                ),className = self.class_choice)
+            )
+        return graphs
+    @staticmethod
+    def copy_graph_layout(relayout_data, FIG):
+        if 'xaxis.range[0]' in relayout_data:
+            FIG['layout']['xaxis']['range'] = [
+                relayout_data['xaxis.range[0]'],
+                relayout_data['xaxis.range[1]']
+            ]
+        if 'yaxis.range[0]' in relayout_data:
+            FIG['layout']['yaxis']['range'] = [
+                relayout_data['yaxis.range[0]'],
+                relayout_data['yaxis.range[1]']
+            ]
+        if 'scene.camera' in relayout_data:
+            FIG.update_layout(scene_camera = relayout_data['scene.camera'])
     def run(self):
         """Summary
         """

@@ -104,7 +104,8 @@ class plots:
                     family='sans-serif',
                     size=20,
                     color='#100'
-                )),
+                )
+                ),
             # autosize=False,
             # width=1200,
             # height=1200
@@ -114,7 +115,11 @@ class plots:
                 b=100,
                 t=100,
                 pad=4
-            )
+            ),
+
+            xaxis = dict(title = "Intervals", zeroline = False,range=
+                        [min(data["x"]) ,
+                         max(data["x"]) ]),
             # paper_bgcolor="#b6e2f5"
             )
         fig.update_yaxes(automargin=True,showgrid=False,zeroline=False)
@@ -169,7 +174,11 @@ class plots:
                 b=100,
                 t=100,
                 pad=4
+            ),
+            scene_camera = dict(
+                
             )
+
             # paper_bgcolor="#b6e2f5"
             )
         fig.update_yaxes(automargin=True,showgrid=False,zeroline=False)
