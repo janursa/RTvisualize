@@ -11,12 +11,12 @@ from realtime import monitor
 settings = {
     "plot1": {
             "graph_dir" = "path/to/CSV/file1.csv",
-            "graph_type" = scatter,
+            "graph_type" = "scatter",
             "graph_size" = 600
            },
     "plot2":{
             "graph_dir" = "path/to/CSV/file2.csv",
-            "graph_type" = lines,
+            "graph_type" = "lines",
             "graph_size" = 500,
             "x-axis-moves" = True,
             "x-axis-length" = 50
