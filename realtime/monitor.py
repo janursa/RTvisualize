@@ -172,7 +172,7 @@ class watch:
                 interval=1000,
                 n_intervals = 0))
         
-        layout_objects.append(html.Div(id="graphs",children=self.generate_graphs(self.df.keys()), className='row'))
+        layout_objects.append(html.Div(html.Div(id="graphs",children=self.generate_graphs(self.df.keys())), className='row'))
         self.app.layout = html.Div(layout_objects, className="container",style={'width':'98%','margin-left':10,'margin-right':10,'max-width':50000})
 
     def callbacks(self):
@@ -206,6 +206,9 @@ class watch:
     def generate_graphs(self,graph_tags):
         graphs = []
         for graph_tag in graph_tags: # iterate through requested graph names
+            if "graph_size" not in self.df[graph_tag]:
+                self.df[graph_tag]["graph_size"] = 600
+
             if self.df[graph_tag]["graph_type"] == "custom": # if the plot is given, just add it to the graph list
                 figure_func = self.df[graph_tag]["figure"]
                 FIG = figure_func(self.df[graph_tag]["data"])
