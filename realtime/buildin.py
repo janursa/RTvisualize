@@ -78,24 +78,28 @@ class plots:
         y_length = max(data["y"]) - min(data["y"])
 
         max_size = max(data["size"])
-        # min_agent_size = min(data["size"])
         marker_max_size = 2.*(max_size / 20**2)
         fig = px.scatter(
             data,
             x = data["x"],
             y = data["y"],
             color = data["type"],
-            # size = data["size"],
-            # size_max = marker_max_size,
-            # size_min=min_agent_size,
-            hover_name = data["type"],
-            render_mode='webgl',
+            size = data["size"],
+            size_max = max_size,
+            # hover_name = data["type"],
+            range_color=[0,100],
+            # render_mode='webgl',
+            color_continuous_scale=px.colors.sequential.Jet,
             width = graph_size,
             height =graph_size*(y_length / x_length)
         )
+        fig.update_traces(marker=dict(size=12,
+                              line=dict(width=0.001,
+                                        color='DarkSlateGrey')),
+                  selector=dict(mode='markers'))
         fig.update_layout(
             title=dict(
-                text= '<b>'+name+'</b>',
+                # text= '<b>'+name+'</b>',
                 y= .9,
                 x= 0.5,
                 xanchor= 'center',
@@ -106,24 +110,35 @@ class plots:
                     color='#100'
                 )
                 ),
+             margin=dict(
+                              l=10,
+                              r=50,
+                              b=10,
+                              t=10
+                          ),
             # autosize=False,
             # width=1200,
             # height=1200
-            margin=dict(
-                l=50,
-                r=150,
-                b=100,
-                t=100,
-                pad=4
-            ),
+            # margin=dict(
+            #     l=50,
+            #     r=150,
+            #     b=100,
+            #     t=100,
+            #     pad=4
+            # ),
 
-            xaxis = dict(title = "Intervals", zeroline = False,range=
+            xaxis = dict(title = '', visible=False, zeroline = False,range=
                         [min(data["x"]) ,
                          max(data["x"]) ]),
-            # paper_bgcolor="#b6e2f5"
+            yaxis = dict(title = '',visible=False),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            legend = dict(title= '',font = dict(family = "Times New Romans", size = 20, color = "black")),
+            showlegend=False    
             )
         fig.update_yaxes(automargin=True,showgrid=False,zeroline=False)
         fig.update_xaxes(automargin=True,showgrid=False,zeroline=False)
+        fig.write_image(name+'.svg')
         return fig
     def scatter3(data,name,graph_size):
         """Constructs a scatter plot using Plotly express
