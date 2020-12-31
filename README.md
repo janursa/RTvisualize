@@ -69,10 +69,6 @@ This package can be installed using pip:
 ```
 pip install RTvisualize
 ```
-or conda:
-```
-conda install -c giswqs RTvisualize
-```
 or download the package and command:
 ```
 python install setup.py
