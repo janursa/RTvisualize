@@ -25,6 +25,7 @@ settings = {
 monitor.watch(settings).run()
 ```
 An example of this type can be found [here](https://github.com/janursa/RTvisualize/blob/master/examples/builtin/).
+
 ***Usage type 2, custom plots***: this approach enables the user to construct the plot in a desired way and pass it to the program together with CSV file address and some other options.
 ```python
 from realtime import monitor
