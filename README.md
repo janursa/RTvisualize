@@ -24,6 +24,7 @@ settings = {
 }
 monitor.watch(settings).run()
 ```
+An example of this type can be found [here](https://github.com/janursa/RTvisualize/blob/master/examples/builtin/).
 ***Usage type 2, custom plots***: this approach enables the user to construct the plot in a desired way and pass it to the program together with CSV file address and some other options.
 ```python
 from realtime import monitor
@@ -62,6 +63,7 @@ settings = {
 }
 monitor.watch(settings).run()
 ```
+An example of this type can be found [here](https://github.com/janursa/RTvisualize/blob/master/examples/custom/).
 ### CSV formating
 For a line plot, the data needs to be formated in a vertical shape with the name of the variable as column title. User can use as many variables as intended to be plotted on the same graph. See [lineDataFormat](https://github.com/janursa/RTvisualize/blob/master/examples/builtin/linesdata.csv). For scatter plots, the information x,y,type,size needs to be provided for each scatter point (see [scatterDataFormat](https://github.com/janursa/RTvisualize/blob/master/examples/builtin/scatterdata.csv)). For 3D scatter plot, the format should follow x,y,z,type,size. 
 ### Installation
