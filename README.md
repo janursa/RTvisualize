@@ -5,7 +5,7 @@ This program enables users to conveniently visualize their data in a real-time m
 ```
 pip install RTvisualize
 ```
-***Usage type 1, build-in plots***: in this approach, all you need is to format the CSV files as instructed (#CSV formating), determine the type of plot together with some other options and run the program.
+***Usage type 1, build-in plots***: in this approach, all you need is to [format the CSV files](#CSV-formating), determine the type of plot together with some other options and run the program.
 ```python
 from realtime import monitor
 settings = {
