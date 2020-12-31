@@ -3,7 +3,7 @@ This program enables users to conveniently visualize their data in a real-time m
 
 ### Quick start
 ```
-pip install realtime_visualization
+pip install RTvisualize
 ```
 ***Usage type 1, build-in plots***: in this approach, all you need is to format the CSV files as instructed, determine the type of plot together with some other options and run the program.
 ```python
@@ -47,28 +47,31 @@ def figure2(data):
 
 settings = {
     "plot1": {
-            "graph_dir" = "path/to/CSV/file1.csv",
-            "graph_type" = custom,
-            "figure" = figure1
+            "graph_dir" : "path/to/CSV/file1.csv",
+            "graph_type" : 'custom',
+            "figure" : figure1,
+            "graph_size" : 800,
+            'x-axis-moves': False
            },
     "plot2":{
-            "graph_dir" = "path/to/CSV/file2.csv",
-            "graph_type" = custom,
-            "figure" = figure2
+            "graph_dir" : "path/to/CSV/file2.csv",
+            "graph_type" : custom,
+            "figure" : figure2,
+            "graph_size" : 700,
     }
 }
 monitor.watch(settings).run()
 ```
-See [Documentation](https://janursa.github.io/realtime_visualization/) for further information and examples.
-
+### CSV format
+For a line plot, the data needs to be formated in a vertical shape with the name of the variable as column title. User can use as many variables as intended to be plotted on the same graph. See 
 ### Installation
 This package can be installed using pip:
 ```
-pip install realtime_visualization
+pip install RTvisualize
 ```
 or conda:
 ```
-conda install -c realtime_visualization
+conda install -c giswqs RTvisualize
 ```
 or download the package and command:
 ```

@@ -20,11 +20,11 @@ sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Realtime visualization'
+project = 'RTvisualize'
 copyright = '2020, Jalil Nourisa'
 author = 'Jalil Nourisa'
 
-release = '01.05.2020'
+release = '03.01.2021'
 
 def setup(app):
     app.add_css_file('css/custom.css')  # may also be an URL

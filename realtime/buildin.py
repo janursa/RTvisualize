@@ -116,16 +116,6 @@ class plots:
                               b=10,
                               t=10
                           ),
-            # autosize=False,
-            # width=1200,
-            # height=1200
-            # margin=dict(
-            #     l=50,
-            #     r=150,
-            #     b=100,
-            #     t=100,
-            #     pad=4
-            # ),
 
             xaxis = dict(title = '', visible=False, zeroline = False,range=
                         [min(data["x"]) ,
@@ -138,10 +128,10 @@ class plots:
             )
         fig.update_yaxes(automargin=True,showgrid=False,zeroline=False)
         fig.update_xaxes(automargin=True,showgrid=False,zeroline=False)
-        fig.write_image(name+'.svg')
+        # fig.write_image(name+'.svg')
         return fig
     def scatter3(data,name,graph_size):
-        """Constructs a scatter plot using Plotly express
+        """Constructs a 3 Dscatter plot using Plotly express
         
         Args:
             data (DataFrame): data in the form of Pandas DataFrame

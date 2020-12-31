@@ -18,7 +18,6 @@ from .buildin import plots
 import copy
 
 def _get_docs_index_path(): # returns dir of the documentation file
-    # my_package_root = os.path.dirname(os.path.dirname(__file__))
     docs_index = os.path.join('docs', 'build', 'html', 'index.html')
     return docs_index
 def _docstring_parameter(*args, **kwargs): # addes keywords to the docstring
@@ -39,15 +38,13 @@ class _externals:
 @_docstring_parameter(_get_docs_index_path())
 class watch:
     """This is the main class to read the files, construct plots and monitor changes.
-    For documentation, see {}
-
     """
     
     def __init__(self,info):
         """Initialize the app by setting up the framework py::meth:`frame` and callback functions py::meth:`callbacks`.
         
         Args:
-            info (dict): The information of the plots entered by the user.
+            info (dict): The specifications of the plots entered by the user.
         """
         # generated FIGs tagged with the figure name
         self.FIGS = {} 
@@ -79,9 +76,8 @@ class watch:
 
     def postprocess(self,df,fig_type):
         """
-            - Catches some errors in the input file.
-            - Addes generic size and type columns in case they are not given in the file. 
-                    For the case of custom plots, the process is skipped.
+        This function catches  errors in the input file as well as addes generic size and type columns in case they are not given in the file. 
+        For the case of custom plots, the process is skipped.
         
         Args:
             df (DataFrame): Data read from the directory file. This data needs processing.
@@ -176,6 +172,9 @@ class watch:
         self.app.layout = html.Div(layout_objects, className="container",style={'width':'98%','margin-left':10,'margin-right':10,'max-width':50000})
 
     def callbacks(self):
+        """
+        Definition of callback functions are given here.
+        """
         states = []
         for key in self.df.keys():
             states.append(dash.dependencies.State(key,'relayoutData'))
@@ -204,6 +203,9 @@ class watch:
             else:
                 return self.generate_graphs(graph_tags)
     def generate_graphs(self,graph_tags):
+        """
+        This function takes care of plot generation either using build-in plots or custom plots.
+        """
         graphs = []
         for graph_tag in graph_tags: # iterate through requested graph names
             if "graph_size" not in self.df[graph_tag]:
@@ -235,16 +237,12 @@ class watch:
                 else:
                     print("Graph type is not defined. It should be either lines or scatter(3)")
                     sys.exit()
-            
-            # if graph_tag in self.FIGS:
-            #     watch.copy_settings(self.FIGS[graph_tag],FIG)
+
             if graph_tag in self.relayoutDatas:
                 relayout_data = self.relayoutDatas[graph_tag]
                 if  relayout_data:
                     watch.copy_graph_layout(relayout_data,FIG)
             self.FIGS.update({graph_tag:FIG})
-
-            # graphs.append(graph)
         graphs = []
         for key in graph_tags:
             graphs.append(html.Div(dcc.Graph(
@@ -267,8 +265,12 @@ class watch:
             ]
         if 'scene.camera' in relayout_data:
             FIG.update_layout(scene_camera = relayout_data['scene.camera'])
-    def run(self):
-        """Summary
+    def run(self,IP={}):
         """
-
-        self.app.run_server(debug=True, host='127.0.0.1')
+        Activate the server and map the graphs on the given IP.
+        Args:
+            IP (string): the IP where the graphs intended for plotting.
+        """
+        if IP == {}:
+            IP = '127.0.0.1'
+        self.app.run_server(debug=True, host=IP)
