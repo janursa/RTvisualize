@@ -15,17 +15,17 @@ class plots:
         Returns:
             Figure: Returns a figure object
         """
-        traces = []
+        fig = go.Figure()
         i =0
         for key,value in data.items():
-            traces.append(go.Scatter(
+            fig.add_trace(go.Scatter(
                 y=value,
                 name=key,
-                line = dict(width=3, dash=plots.line_types[i])
+                line = dict(width=3, dash=plots.line_types[i],color = 'DarkSlateGrey')
             ))
             i+=1
 
-        layout = go.Layout(
+        fig.update_layout(
             title=dict(
                 text= '<b>'+name+'</b>',
                 y= 0.9,
@@ -35,21 +35,66 @@ class plots:
                 font=dict(
                     family='sans-serif',
                     size=20,
-                    color='#100'
+                    color='DarkSlateGrey'
                 )),
-            xaxis = dict(title = "Intervals", zeroline = False,range=
-                        [x_limits[0] - 0.5,
-                         x_limits[1] + 0.5]),
-            yaxis = dict(title = "Values", zeroline = False, range =
+
+            xaxis = dict(
+                    title =dict(
+                        text = 'Time intervals',
+                        font=dict(
+                            family='sans-serif',
+                            size=20,
+                            color='DarkSlateGrey'
+                        )
+                    ),
+                    showgrid=True,
+                    mirror=True,
+                    showline=True,
+                    # zeroline = False,
+                    linecolor = 'black',
+                    gridwidth = 20,
+                    tickfont = dict(
+                        family = 'Times New Roman',
+                        size = 30,
+                        color = 'black'
+                    ),
+                    range=[x_limits[0] - 0.5,x_limits[1] + 0.5]
+                ),
+            
+            yaxis = dict(
+                    title =dict(
+                        text = 'Values',
+                        font=dict(
+                            family='sans-serif',
+                            size=20,
+                            color='DarkSlateGrey'
+                        )
+                    ),
+                    showgrid=True,
+                    mirror=True,
+                    showline=True,
+                    linecolor = 'black',
+                    gridwidth = 20,
+                    tickfont = dict(
+                        family = 'Times New Roman',
+                        size = 30,
+                        color = 'black'
+                    ),
+                    zeroline = False, 
+                    range =
                         [min([min(data[key]) for key in data.keys()]) - 0.5,
                          max([max(data[key]) for key in data.keys()]) + 0.5]),
+                    
+
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
             legend=dict(
                 x=1,
                 y=.95,
                 traceorder='normal',
                 font=dict(
                     family='sans-serif',
-                    size=12,
+                    size=20,
                     color='#000'
                 ),
                 bordercolor='#FFFFFF',
@@ -63,7 +108,11 @@ class plots:
                 pad=4
             )
         )
-        return traces, layout
+        
+        fig.update_yaxes(automargin=True,showgrid=False,zeroline=False)
+        fig.update_xaxes(automargin=True,showgrid=False,zeroline=False)
+        fig.write_image(name+'.svg')
+        return fig
     def scatter(data,name,graph_size):
         """Constructs a scatter plot using Plotly express
         
@@ -170,6 +219,9 @@ class plots:
                     size=20,
                     color='#100'
                 )),
+
+            # xaxis = dict(title = 'yaya', visible=False, zeroline = False),
+            # yaxis = dict(title = '', visible=False, zeroline = False),
             # autosize=False,
             # width=1200,
             # height=1200
@@ -182,10 +234,23 @@ class plots:
             ),
             scene_camera = dict(
                 
-            )
-
+            ),
+            legend=dict(
+                x=1,
+                y=.95,
+                traceorder='normal',
+                font=dict(
+                    family='sans-serif',
+                    size=20,
+                    color='#000'
+                ),
+                bordercolor='#FFFFFF',
+                borderwidth=1
+            ),
             # paper_bgcolor="#b6e2f5"
             )
+        fig.update_yaxes(visible=False, showticklabels=False)
+        # fig.layout. xaxis. showticklabels = False
         fig.update_yaxes(automargin=True,showgrid=False,zeroline=False)
         fig.update_xaxes(automargin=True,showgrid=False,zeroline=False)
         return fig

@@ -1,0 +1,7 @@
+[31/12/2020]
+-the documentation of the code was improved.
+-examples were added
+-the README was improved 
+-sphnix documentatin was attempted to improve but ignored for now
+-pip installation changed to RTvisualize
+-conda installation was attempted but ignored for now

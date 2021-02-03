@@ -225,8 +225,8 @@ class watch:
                         min_x = min(self.df[graph_tag]["data"].index)
                     x_limits = [min_x,max_x]
 
-                    sub_graph,layout = plots.lines(self.df[graph_tag]["data"],graph_tag,x_limits)
-                    FIG = {'data': sub_graph,'layout' : layout}
+                    FIG = plots.lines(self.df[graph_tag]["data"],graph_tag,x_limits)
+                    
 
                 elif self.df[graph_tag]["graph_type"] == "scatter":
                     FIG = plots.scatter(self.df[graph_tag]["data"],graph_tag,self.df[graph_tag]["graph_size"])
