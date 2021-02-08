@@ -52,7 +52,7 @@ class plots:
 
             xaxis = dict(
                     title =dict(
-                        text = 'Time intervals',
+                        text = 'X',
                         font=dict(
                             family=plots.font,
                             size=20,
@@ -75,7 +75,7 @@ class plots:
             
             yaxis = dict(
                     title =dict(
-                        text = 'Values',
+                        text = 'Y',
                         font=dict(
                             family=plots.font,
                             size=20,
