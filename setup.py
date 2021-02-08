@@ -13,7 +13,7 @@ def extract_longDiscription(file_name):
     return long_description
 setuptools.setup(
     name="RTvisualize",
-    version='1.01.15',
+    version='1.01.16',
     author="Jalil Nourisa",
     author_email="jalil.nourisa@gmail.com",
     description="A general purpose realtime visualization",
