@@ -13,7 +13,7 @@ import plotly.express as px
 import pandas as pd
 import plotly
 import numpy as np
-
+from copy import deepcopy
 from .buildin import plots
 import copy
 
@@ -39,7 +39,7 @@ class _externals:
 class watch:
     """This is the main class to read the files, construct plots and monitor changes.
     """
-    
+    colors = ['blue','green','red','black','purple']
     def __init__(self,info):
         """Initialize the app by setting up the framework py::meth:`frame` and callback functions py::meth:`callbacks`.
         
@@ -50,16 +50,15 @@ class watch:
         self.FIGS = {} 
         self.relayoutDatas = {} 
         # database
-        self.df = info 
+        self.specs = info 
         # class type for the arrangment of graphs
-        if len(self.df.keys())>2:
-            class_choice = 'col s12 m6 l6'
-        elif len(self.df.keys()) == 2:
-            class_choice = 'col s12 m6 l6'
-        else:
-            class_choice = 'col s12'
-        self.class_choice = class_choice
-
+        self.cols = {}
+        for key,spec in self.specs.items():
+            if 'col' not in spec:
+                spec.update({'col':'col s6'})
+            self.cols.update({key:spec['col']})
+        
+        self.color_map = {} # maps color to each type in scatter plots
         self.app = dash.Dash(__name__,
                             external_stylesheets = _externals.get_stylesheets(),
                             external_scripts = _externals.get_scripts())
@@ -74,10 +73,11 @@ class watch:
         self.frame()
         self.callbacks()
 
-    def postprocess(self,df,fig_type):
+    def postprocess(self,name,df,fig_type):
         """
         This function catches  errors in the input file as well as addes generic size and type columns in case they are not given in the file. 
         For the case of custom plots, the process is skipped.
+        For the case of scatter and scatter3, this function also categorize data based on given types.
         
         Args:
             df (DataFrame): Data read from the directory file. This data needs processing.
@@ -93,7 +93,7 @@ class watch:
             pass
         else: # add these items if custom plot is not given
             # add size if it's not there
-            if fig_type == "scatter" or fig_type == "scatter3":  #if it's a scatter plot, add missin items, i.e. size and type
+            if fig_type == "scatter2" or fig_type == "scatter3":  #if it's a scatter plot, add missin items, i.e. size and type
                 if "size" not in df.keys():
                     fixed_size = np.ones(len(df["x"]))
                     df["size"] = fixed_size
@@ -101,6 +101,36 @@ class watch:
                 if "type" not in df.keys():
                     fixed_type = "agent"
                     df["type"] = fixed_type
+        ## organizing data based on given type. This is used for scatter and scatter3 to prevent color swinging
+        if fig_type == 'scatter' or fig_type == 'scatter3':
+            types = df['type']
+            types_unique = set(types) # remove the repeated items
+            indices = {} # indices of df for each type
+            for t in types_unique: # initialize with empty vectors
+                indices.update({t:[]})
+            for i in range(len(types)): # detect which rows below to which types and add it to the relevent indices
+                for t in types_unique:
+                    if types[i] == t:
+                        indices[t].append(i)
+                        break
+            data_sorted = {} # sorted data based on types
+            for t in types_unique:
+                data_sorted.update({t:df.iloc[indices[t]]})
+            df = data_sorted
+            # add color map for the first time
+            if name  not in self.color_map: #first time
+                self.color_map.update({name:{}})
+            taken_colors = self.color_map[name].values()
+            nontaken_colors = deepcopy(self.colors)
+            for c in list(taken_colors):
+                nontaken_colors.remove(c)
+
+            ii = 0
+            for t in types_unique:
+                if t not in self.color_map[name]:
+                    self.color_map[name].update({t:nontaken_colors[ii]})
+                ii+=1            
+
         return df
     def read(self,file_dir):
         """Reads the data files in csv and converts them into pandas DataFrame.
@@ -118,6 +148,7 @@ class watch:
             print("Given file directory {} is invalid".format(file_dir))
             sys.exit()
         return data
+
     def update_db(self):
         """Updates the global database in case there are changes in the files. 
         It queries modification date of files and upon change in the modification date, it calles :py:meth:`read`,
@@ -127,21 +158,30 @@ class watch:
             bool: if any changes occures, this flag will be true
         """
         any_update_flag = False  # if any of the files has changed
-        for name in self.df.keys(): # main keys such as plot names
-            file = self.df[name]["graph_dir"]
+        for name in self.specs.keys(): # main keys such as plot names
+            file = self.specs[name]["graph_dir"]
             last_moddate = os.stat(file)[8] # last modification time
-            if "moddate" not in self.df[name].keys() : # in this case, file is not upload for the first optimizer
-                data = self.read(file)
-                data = self.postprocess(data,self.df[name]["graph_type"])
-                self.df[name].update({"data":data})
-                self.df[name].update({"moddate":last_moddate})
+            if "moddate" not in self.specs[name].keys() : # in this case, file is not upload for the first optimizer
+                try:
+                    data = self.read(file)
+                except pd.errors.EmptyDataError:
+                    print("No columns to parse from file")
+                    continue
+                data = self.postprocess(name,data,self.specs[name]["graph_type"])
+                self.specs[name].update({"data":data})
+                # self.specs[name].update({"color_map":color_map})
+                self.specs[name].update({"moddate":last_moddate})
                 any_update_flag = True
-            elif self.df[name]["moddate"] != last_moddate:# if the new date is different
-                data = self.read(file)
-                data = self.postprocess(data,self.df[name]["graph_type"])
+            elif self.specs[name]["moddate"] != last_moddate:# if the new date is different
+                try:
+                    data = self.read(file)
+                except pd.errors.EmptyDataError:
+                    print("No columns to parse from file") ## to block a bug
+                    continue
+                data = self.postprocess(name,data,self.specs[name]["graph_type"])
 
-                self.df[name].update({"data":data})
-                self.df[name].update({"moddate":last_moddate})
+                self.specs[name].update({"data":data})
+                self.specs[name].update({"moddate":last_moddate})
                 any_update_flag = True
 
             else:
@@ -159,8 +199,8 @@ class watch:
                 ]))
         layout_objects.append(dcc.Dropdown(id='list_of_plots',
                          options=[{'label': s, 'value': s}
-                                  for s in self.df.keys()],
-                         value=[s for s in self.df.keys()],
+                                  for s in self.specs.keys()],
+                         value=[s for s in self.specs.keys()],
                          multi=True
                          ))
         layout_objects.append(dcc.Interval(
@@ -168,7 +208,7 @@ class watch:
                 interval=1000,
                 n_intervals = 0))
         
-        layout_objects.append(html.Div(html.Div(id="graphs",children=self.generate_graphs(self.df.keys())), className='row'))
+        layout_objects.append(html.Div(html.Div(id="graphs",children=self.generate_graphs(self.specs.keys())), className='row'))
         self.app.layout = html.Div(layout_objects, className="container",style={'width':'98%','margin-left':10,'margin-right':10,'max-width':50000})
 
     def callbacks(self):
@@ -176,7 +216,7 @@ class watch:
         Definition of callback functions are given here.
         """
         states = []
-        for key in self.df.keys():
+        for key in self.specs.keys():
             states.append(dash.dependencies.State(key,'relayoutData'))
         
         @self.app.callback(
@@ -186,7 +226,7 @@ class watch:
             )
         def update_graph(n_intervals,graph_tags,*relayoutDatas):
             i = 0
-            for key in self.df.keys():
+            for key in self.specs.keys():
                 relayoutData = relayoutDatas[i]
                 if relayoutData:
                     if 'xaxis.range[0]' in relayoutData or 'scene.camera' in relayoutData:
@@ -208,31 +248,33 @@ class watch:
         """
         graphs = []
         for graph_tag in graph_tags: # iterate through requested graph names
-            if "graph_size" not in self.df[graph_tag]:
-                self.df[graph_tag]["graph_size"] = 600
+            if "graph_size" not in self.specs[graph_tag]:
+                self.specs[graph_tag]["graph_size"] = (800,800)
+            if "col" not in self.specs[graph_tag]:
+                self.specs[graph_tag]["col"] = 'col s5'
 
-            if self.df[graph_tag]["graph_type"] == "custom": # if the plot is given, just add it to the graph list
-                figure_func = self.df[graph_tag]["figure"]
-                FIG = figure_func(self.df[graph_tag]["data"])
+            if self.specs[graph_tag]["graph_type"] == "custom": # if the plot is given, just add it to the graph list
+                figure_func = self.specs[graph_tag]["figure"]
+                FIG = figure_func(self.specs[graph_tag]["data"])
 
                 
             else:
-                if self.df[graph_tag]["graph_type"] == "lines":
-                    max_x = max(self.df[graph_tag]["data"].index)
-                    if self.df[graph_tag]["x-axis-moves"] == True:
-                        min_x = max_x - self.df[graph_tag]["x-axis-length"]
+                if self.specs[graph_tag]["graph_type"] == "lines":
+                    max_x = max(self.specs[graph_tag]["data"].index)
+                    if self.specs[graph_tag]["x-axis-moves"] == True:
+                        min_x = max_x - self.specs[graph_tag]["x-axis-length"]
                     else:
-                        min_x = min(self.df[graph_tag]["data"].index)
+                        min_x = min(self.specs[graph_tag]["data"].index)
                     x_limits = [min_x,max_x]
 
-                    FIG = plots.lines(self.df[graph_tag]["data"],graph_tag,x_limits)
+                    FIG = plots.lines(self.specs[graph_tag]["data"],graph_tag,x_limits)
                     
 
-                elif self.df[graph_tag]["graph_type"] == "scatter":
-                    FIG = plots.scatter(self.df[graph_tag]["data"],graph_tag,self.df[graph_tag]["graph_size"])
+                elif self.specs[graph_tag]["graph_type"] == "scatter2":
+                    FIG = plots.scatter(self.specs[graph_tag]["data"],graph_tag,self.specs[graph_tag]["graph_size"])
 
-                elif self.df[graph_tag]["graph_type"] == "scatter3":
-                    FIG = plots.scatter3(self.df[graph_tag]["data"],graph_tag,self.df[graph_tag]["graph_size"])
+                elif self.specs[graph_tag]["graph_type"] == "scatter3":
+                    FIG = plots.scatter3(self.specs[graph_tag]["data"],graph_tag,self.specs[graph_tag]["graph_size"],self.color_map[graph_tag])
 
                 else:
                     print("Graph type is not defined. It should be either lines or scatter(3)")
@@ -248,7 +290,7 @@ class watch:
             graphs.append(html.Div(dcc.Graph(
                 id=key,
                 figure=self.FIGS[key]
-                ),className = self.class_choice)
+                ),className = self.cols[key])
             )
         return graphs
     @staticmethod

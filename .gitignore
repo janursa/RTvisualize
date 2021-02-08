@@ -16,3 +16,5 @@ build
 dist
 check
 plotly.egg-info/
+docker
+notes.txt

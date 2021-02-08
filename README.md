@@ -1,32 +1,73 @@
-# Real time visualization
-This program enables users to conveniently visualize their data in a real-time manner using the power of Dash and Plotly. The program reads the data from CSV files and generates graphs on a web browser. The graphs will be updated automatically upon changes to the files.
 
-### Quick start
+# Real time visualization
+This program enables users to conveniently visualize their data in a real-time manner using the power of Dash and Plotly. The program reads the data from CSV files and generates graphs on a web browser. The graphs will be updated automatically upon changes to the files.  
+## Installation
+This package can be installed using pip:
 ```
 pip install RTvisualize
 ```
-***Usage type 1, build-in plots***: in this approach, all you need is to [format the CSV files](#CSV-formating), determine the type of plot together with some other options and run the program.
+or download the package and command:
+```
+python install setup.py
+```
+## Quick start
+The library requires a setting variable for execution, where the user can specify as many plots as desired for simultaneous visualization.  A generic template looks like this,
 ```python
 from realtime import monitor
 settings = {
-    "plot1": {
-            "graph_dir" = "path/to/CSV/file1.csv",
-            "graph_type" = "scatter",
-            "graph_size" = 600
-           },
-    "plot2":{
-            "graph_dir" = "path/to/CSV/file2.csv",
-            "graph_type" = "lines",
-            "graph_size" = 500,
-            "x-axis-moves" = True,
-            "x-axis-length" = 50
-    }
-}
-monitor.watch(settings).run()
-```
-An example of this type can be found [here](https://github.com/janursa/RTvisualize/blob/master/examples/builtin/).
+    'name1': {...}, # specifications for the 1st graph
+    'name2':{...} # specifications for the 2nd graph
+monitor.watch(settings).run(IP='0.0.0.0`) # runs the server and maps the graphs on the specified IP:8050 address
+   ```
+The specifications of each plot contains a few important entries from the user. Generally, two types of approaches can be taken in using the library; first, using [build-in plots](#build-in-plots); and second, using [custom plots](#custom-plots).
+### Build-in plots
+The library provides the following build-in plots:
 
-***Usage type 2, custom plots***: this approach enables the user to construct the plot in a desired way and pass it to the program together with CSV file address and some other options.
+- [Line plot](#line-plots)
+- [Scatter plots 2D](#scatter-plots-2D)
+- [Scatter plots 3D](#scatter-plots-3D)
+
+See  the <a href="https://github.com/janursa/RTvisualize/tree/master/examples/builtin">example</a>.
+#### Line plots
+Line plots intends to monitor the progression of variables during time (see <a href="https://plotly.com/python/line-charts/" title="cppy">Plotly line plots</a>).  The required specifications entry for the line plots looks like,
+```py
+    'plot1':{
+            'graph_dir' = 'path/to/CSV/file1.csv', # directory to csv file containing the data
+            'graph_type' = 'lines', # specifies the graph type
+    }
+```
+Additional settings available for line plots are,
+```py
+            'col': 'col s5', # specifies grid size for the html page
+            'graph_size' = (500,600), # specifies graph size
+            'x-axis-moves' = True, # whether to move the x-axis by holding the x-length fixed
+            'x-axis-length' = 50 # if the above flag is True, specify the x-axis length
+```
+For the html grid specification see  <a href="https://materializecss.com/grid.html" >here</a>. The csv file needs to be formated in a vertical shape with the name of the variable as column title. User can use as many variables as intended to be plotted on the same graph. See [example](https://github.com/janursa/RTvisualize/blob/master/examples/builtin/linesdata.csv).
+#### Scatter plots 2D
+The required specifications entry for the line plots looks like,
+```py
+    'plot2':{
+            'graph_dir' = 'path/to/CSV/file2.csv', # directory to csv file containing the data
+            'graph_type' = 'scatter2', # specifies the graph type
+    }
+```
+Additional settings available for line plots are,
+```py
+            'col': 'col s5', # specifies grid size for the html page
+            'graph_size' = (500,600), # specifies graph size
+```
+For scatter plots, the information `x,y,type,size` needs to be provided for each scatter point (see [example](https://github.com/janursa/RTvisualize/blob/master/examples/builtin/scatterdata.csv)). 
+
+#### Scatter plots 3D
+The specifications entry for scatter plot 3D is similar to [scatter 2D](#scatter-plot-2D) with the exeptions of:
+```py
+        'graph_type' = 'scatter3'
+```
+and the csv formatting is similar to the scatter 2D with the exception of having an additional `z`item, i.e. `x,y,z,type,size`.
+
+### Custom plots
+This approach enables the user to construct the plot in a desired way and pass it to the program together with CSV file,
 ```python
 from realtime import monitor
 def figure1(data):
@@ -37,53 +78,23 @@ def figure1(data):
         size=data["size"]
     )
     return fig
-def figure2(data):
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=data["x1"], y=data["y1"],
-                        mode='lines',
-                        name='lines'))
-    fig.add_trace(go.Scatter(x=data["x2"], y=data["y2"],
-                        mode='lines+markers',
-                        name='lines+markers'))
-    return fig
-
 settings = {
     "plot1": {
             "graph_dir" : "path/to/CSV/file1.csv",
-            "graph_type" : 'custom',
-            "figure" : figure1,
-            "graph_size" : 800,
-            'x-axis-moves': False
-           },
-    "plot2":{
-            "graph_dir" : "path/to/CSV/file2.csv",
-            "graph_type" : custom,
-            "figure" : figure2,
-            "graph_size" : 700,
-    }
+            "graph_type" : 'custom', # this is different than build-in plots
+            "figure" : figure1, # this provides the plotting function
+            "graph_size" : (800,700)
+           }
 }
-monitor.watch(settings).run()
 ```
 An example of this type can be found [here](https://github.com/janursa/RTvisualize/blob/master/examples/custom/).
 
-### CSV formating
-For a line plot, the data needs to be formated in a vertical shape with the name of the variable as column title. User can use as many variables as intended to be plotted on the same graph. See [lineDataFormat](https://github.com/janursa/RTvisualize/blob/master/examples/builtin/linesdata.csv). For scatter plots, the information x,y,type,size needs to be provided for each scatter point (see [scatterDataFormat](https://github.com/janursa/RTvisualize/blob/master/examples/builtin/scatterdata.csv)). For 3D scatter plot, the format should follow x,y,z,type,size. 
-### Installation
-This package can be installed using pip:
-```
-pip install RTvisualize
-```
-or download the package and command:
-```
-python install setup.py
-```
+
 ### License
 This project is licensed under the MIT License - see the LICENSE.md file for details
 
 ### Authors
 * Jalil Nourisa
-
-See also the list of contributors who participated in this project.
 
 ### Acknowledgments
 Inspired by [sentdex](https://www.youtube.com/channel/UCfzlCWGWYyIQ0aLC5w48gBQ)
