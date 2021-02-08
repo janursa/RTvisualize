@@ -102,7 +102,7 @@ class watch:
                     fixed_type = "agent"
                     df["type"] = fixed_type
         ## organizing data based on given type. This is used for scatter and scatter3 to prevent color swinging
-        if fig_type == 'scatter' or fig_type == 'scatter3':
+        if fig_type == 'scatter2' or fig_type == 'scatter3':
             types = df['type']
             types_unique = set(types) # remove the repeated items
             indices = {} # indices of df for each type
@@ -248,8 +248,6 @@ class watch:
         """
         graphs = []
         for graph_tag in graph_tags: # iterate through requested graph names
-            if "graph_size" not in self.specs[graph_tag]:
-                self.specs[graph_tag]["graph_size"] = (800,800)
             if "col" not in self.specs[graph_tag]:
                 self.specs[graph_tag]["col"] = 'col s5'
 
@@ -271,10 +269,10 @@ class watch:
                     
 
                 elif self.specs[graph_tag]["graph_type"] == "scatter2":
-                    FIG = plots.scatter(self.specs[graph_tag]["data"],graph_tag,self.specs[graph_tag]["graph_size"])
+                    FIG = plots.scatter(self.specs[graph_tag]["data"],graph_tag)
 
                 elif self.specs[graph_tag]["graph_type"] == "scatter3":
-                    FIG = plots.scatter3(self.specs[graph_tag]["data"],graph_tag,self.specs[graph_tag]["graph_size"],self.color_map[graph_tag])
+                    FIG = plots.scatter3(self.specs[graph_tag]["data"],graph_tag,self.color_map[graph_tag])
 
                 else:
                     print("Graph type is not defined. It should be either lines or scatter(3)")

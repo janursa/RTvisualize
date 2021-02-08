@@ -13,13 +13,13 @@ def extract_longDiscription(file_name):
     return long_description
 setuptools.setup(
     name="RTvisualize",
-    version='31.12.2020',
+    version='1.01.15',
     author="Jalil Nourisa",
     author_email="jalil.nourisa@gmail.com",
     description="A general purpose realtime visualization",
     long_description=extract_longDiscription("README.md"),
     long_description_content_type="text/markdown",
-    url="https://github.com/janursa/realtime_visualization",
+    url="https://github.com/janursa/RTvisualize",
     packages=setuptools.find_packages(),
     install_requires=['dash >=1.12', 'plotly >= 4.6.0', 'pandas >= 1.0.3', 'numpy >= 1.18.4'],
     classifiers=[

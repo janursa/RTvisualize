@@ -39,7 +39,6 @@ Line plots intends to monitor the progression of variables during time (see <a h
 Additional settings available for line plots are,
 ```py
             'col': 'col s5', # specifies grid size for the html page
-            'graph_size' = (500,600), # specifies graph size
             'x-axis-moves' = True, # whether to move the x-axis by holding the x-length fixed
             'x-axis-length' = 50 # if the above flag is True, specify the x-axis length
 ```
@@ -52,10 +51,9 @@ The required specifications entry for the line plots looks like,
             'graph_type' = 'scatter2', # specifies the graph type
     }
 ```
-Additional settings available for line plots are,
+Additional settings available,
 ```py
             'col': 'col s5', # specifies grid size for the html page
-            'graph_size' = (500,600), # specifies graph size
 ```
 For scatter plots, the information `x,y,type,size` needs to be provided for each scatter point (see [example](https://github.com/janursa/RTvisualize/blob/master/examples/builtin/scatterdata.csv)). 
 
@@ -64,7 +62,7 @@ The specifications entry for scatter plot 3D is similar to [scatter 2D](#scatter
 ```py
         'graph_type' = 'scatter3'
 ```
-and the csv formatting is similar to the scatter 2D with the exception of having an additional `z`item, i.e. `x,y,z,type,size`.
+and the csv formatting is similar to the scatter 2D with the exception of having an additional `z`item, i.e. `x,y,z,type,size`. See [example](https://github.com/janursa/RTvisualize/blob/master/examples/builtin/scatter3data.csv). 
 
 ### Custom plots
 This approach enables the user to construct the plot in a desired way and pass it to the program together with CSV file,
@@ -83,7 +81,7 @@ settings = {
             "graph_dir" : "path/to/CSV/file1.csv",
             "graph_type" : 'custom', # this is different than build-in plots
             "figure" : figure1, # this provides the plotting function
-            "graph_size" : (800,700)
+            "col" : 'col s5'
            }
 }
 ```
