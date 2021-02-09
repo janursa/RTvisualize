@@ -327,5 +327,5 @@ class watch:
             IP (string): the IP where the graphs intended for plotting.
         """
         if IP == {}:
-            IP = '127.0.0.1'
+            IP = '0.0.0.0'
         self.app.run_server(debug=True, host=IP)
