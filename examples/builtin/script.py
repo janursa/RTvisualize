@@ -1,7 +1,7 @@
 ﻿import pathlib
 import os, sys
-# current_file_path = pathlib.Path(__file__).parent.absolute()
-# sys.path.insert(1,os.path.join(current_file_path,'../..'))
+current_file_path = pathlib.Path(__file__).parent.absolute()
+sys.path.insert(1,os.path.join(current_file_path,'../..'))
 from realtime import monitor
 
 settings = {
@@ -19,7 +19,13 @@ settings = {
     'fig3': {
             'graph_dir' : 'scatter3data.csv',
             'graph_type' : 'scatter3',
-            'col':'col s6'
+            'col':'col s4'
+           },
+    'fig4': {
+            'graph_dir' : 'mapdata.csv',
+            'graph_type' : 'map',
+            'color_range' : [0,100],
+            'col':'col s4'
            },
 
 }

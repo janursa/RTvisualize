@@ -166,6 +166,12 @@ class watch:
         """
         any_update_flag = False  # if any of the files has changed
         for name in self.specs.keys(): # main keys such as plot names
+            # add the missing settings here
+            if "col" not in self.specs[name]:
+                self.specs[name]["col"] = 'col s5'
+            if self.specs[name]['graph_type'] == "map":
+                if "color_range" not in self.specs[name]:
+                    self.specs[name]["color_range"] = None
             file = self.specs[name]["graph_dir"]
             last_moddate = os.stat(file)[8] # last modification time
             if "moddate" not in self.specs[name].keys() : # in this case, file is not upload for the first optimizer
@@ -255,11 +261,6 @@ class watch:
         """
         graphs = []
         for graph_tag in graph_tags: # iterate through requested graph names
-            # add the missing settings here
-            if "col" not in self.specs[graph_tag]:
-                self.specs[graph_tag]["col"] = 'col s5'
-            if "color_range" not in self.specs[graph_tag]:
-                self.specs[graph_tag]["color_range"] = None
 
             if self.specs[graph_tag]["graph_type"] == "custom": # if the plot is given, just add it to the graph list
                 figure_func = self.specs[graph_tag]["figure"]
@@ -285,7 +286,7 @@ class watch:
                     FIG = plots.scatter3(self.specs[graph_tag]["data"],graph_tag,self.color_map[graph_tag])
                 
                 elif self.specs[graph_tag]["graph_type"] == "map":
-                    FIG = plots.map(self.specs[graph_tag]["data"],self.specs[graph_tag]["color_range"])
+                    FIG = plots.map(self.specs[graph_tag]["data"],graph_tag,self.specs[graph_tag]["color_range"])
 
                 else:
                     print(self.specs[graph_tag]["graph_type"])
