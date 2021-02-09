@@ -26,6 +26,7 @@ The library provides the following build-in plots:
 - [Line plot](#line-plots)
 - [Scatter plots 2D](#scatter-plots-2D)
 - [Scatter plots 3D](#scatter-plots-3D)
+- [Map plot](#map-plot)
 
 See  the <a href="https://github.com/janursa/RTvisualize/tree/master/examples/builtin">example</a>.
 #### Line plots
@@ -62,8 +63,14 @@ The specifications entry for scatter plot 3D is similar to [scatter 2D](#scatter
 ```py
         'graph_type' = 'scatter3'
 ```
-and the csv formatting is similar to the scatter 2D with the exception of having an additional `z`item, i.e. `x,y,z,type,size`. See [example](https://github.com/janursa/RTvisualize/blob/master/examples/builtin/scatter3data.csv). 
-
+and the csv formatting is similar to the scatter 2D with the exception of having an additional `z`item, i.e. `x,y,z,type,size`.
+#### Map plot
+Map plot intends to visualize a heteregenous variable accross a domain. It uses similar method as [scatter 2D](#scatter-plot-2D) but the range of colors is contineous. The specifications entry for the map plot is similar to [scatter 2D](#scatter-plot-2D) with the exeptions of:
+```py
+        'graph_type' = 'map',
+        'color_range' = [0,100] #optional. To fix the color range 
+```
+The CSV formatting is similar to [scatter 2D](#scatter-plot-2D) .
 ### Custom plots
 This approach enables the user to construct the plot in a desired way and pass it to the program together with CSV file,
 ```python
