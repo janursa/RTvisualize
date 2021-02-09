@@ -7,6 +7,16 @@ class plots:
     line_colors = ['black','black','black','black','black','black','black']
     font = 'sans-serif'
     @staticmethod
+    def map(data,name):
+        """
+        Constructs a scatter plot using continous range of legends.
+        """
+        fig = px.scatter(data, x='x', y='y', color='type',
+                 size='size',color_continuous_scale='Viridis')
+        fig = plots.update_layout(fig,name)
+        return fig
+
+    @staticmethod
     def lines(data,name,x_limits):
         """Constructs a lines plot using Plotly Go
 

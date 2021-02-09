@@ -93,7 +93,7 @@ class watch:
             pass
         else: # add these items if custom plot is not given
             # add size if it's not there
-            if fig_type == "scatter2" or fig_type == "scatter3":  #if it's a scatter plot, add missin items, i.e. size and type
+            if fig_type == "scatter2" or fig_type == "scatter3" or fig_type == 'map':  #if it's a scatter plot, add missin items, i.e. size and type
                 if "size" not in df.keys():
                     fixed_size = np.ones(len(df["x"]))
                     df["size"] = fixed_size
@@ -273,8 +273,12 @@ class watch:
 
                 elif self.specs[graph_tag]["graph_type"] == "scatter3":
                     FIG = plots.scatter3(self.specs[graph_tag]["data"],graph_tag,self.color_map[graph_tag])
+                
+                elif self.specs[graph_tag]["graph_type"] == "map":
+                    FIG = plots.map(self.specs[graph_tag]["data"],graph_tag)
 
                 else:
+                    print(self.specs[graph_tag]["graph_type"])
                     print("Graph type is not defined. It should be either lines or scatter(3)")
                     sys.exit()
 
