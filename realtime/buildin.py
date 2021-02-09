@@ -7,7 +7,7 @@ class plots:
     line_colors = ['black','black','black','black','black','black','black']
     font = 'sans-serif'
     @staticmethod
-    def map(data,name):
+    def map(data,name,color_range=None):
         """
         Constructs a scatter plot using continous range of legends.
         """
@@ -19,11 +19,46 @@ class plots:
             color = data["type"],
             size = data["size"],
             size_max = max_size,
-            range_color=[0,100],
+            # hover_name = data["type"],
+            range_color=color_range,
             render_mode='webgl',
             color_continuous_scale=px.colors.sequential.Jet
         )
-        fig = plots.update_layout(fig,name)
+        fig.update_traces(marker=dict(size=12,
+                              line=dict(width=0.001,
+                                        color='DarkSlateGrey')),
+                  selector=dict(mode='markers'))
+        fig.update_layout(
+            title=dict(
+                # text= '<b>'+name+'</b>',
+                y= .9,
+                x= 0.5,
+                xanchor= 'center',
+                yanchor= 'top',
+                font=dict(
+                    family='sans-serif',
+                    size=20,
+                    color='#100'
+                )
+                ),
+             margin=dict(
+                              l=10,
+                              r=50,
+                              b=10,
+                              t=10
+                          ),
+
+            xaxis = dict(title = '', visible=False, zeroline = False,range=
+                        [min(data["x"]) ,
+                         max(data["x"]) ]),
+            yaxis = dict(title = '',visible=False),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            legend = dict(title= '',font = dict(family = "Times New Romans", size = 20, color = "black")),
+            showlegend=False    
+            )
+        fig.update_yaxes(automargin=True,showgrid=False,zeroline=False)
+        fig.update_xaxes(automargin=True,showgrid=False,zeroline=False)
         return fig
 
     @staticmethod

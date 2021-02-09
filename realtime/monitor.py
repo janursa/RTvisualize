@@ -130,6 +130,13 @@ class watch:
                 if t not in self.color_map[name]:
                     self.color_map[name].update({t:nontaken_colors[ii]})
                 ii+=1            
+        # if fig_type == 'map':
+        #     print(df['color_range'])
+        #     if 'color_range' not in df:
+        #         types = df['type']
+        #         color_range = max(types)-min(types)
+        #         df['color_range'] = color_range
+
 
         return df
     def read(self,file_dir):
@@ -248,8 +255,11 @@ class watch:
         """
         graphs = []
         for graph_tag in graph_tags: # iterate through requested graph names
+            # add the missing settings here
             if "col" not in self.specs[graph_tag]:
                 self.specs[graph_tag]["col"] = 'col s5'
+            if "color_range" not in self.specs[graph_tag]:
+                self.specs[graph_tag]["color_range"] = None
 
             if self.specs[graph_tag]["graph_type"] == "custom": # if the plot is given, just add it to the graph list
                 figure_func = self.specs[graph_tag]["figure"]
@@ -275,7 +285,7 @@ class watch:
                     FIG = plots.scatter3(self.specs[graph_tag]["data"],graph_tag,self.color_map[graph_tag])
                 
                 elif self.specs[graph_tag]["graph_type"] == "map":
-                    FIG = plots.map(self.specs[graph_tag]["data"],graph_tag)
+                    FIG = plots.map(self.specs[graph_tag]["data"],self.specs[graph_tag]["color_range"])
 
                 else:
                     print(self.specs[graph_tag]["graph_type"])
