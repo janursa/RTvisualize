@@ -1,7 +1,7 @@
 ﻿import pathlib
 import os, sys
-current_file_path = pathlib.Path(__file__).parent.absolute()
-sys.path.insert(1,os.path.join(current_file_path,'../..'))
+# current_file_path = pathlib.Path(__file__).parent.absolute()
+# sys.path.insert(1,os.path.join(current_file_path,'../..'))
 from realtime import monitor
 
 settings = {
