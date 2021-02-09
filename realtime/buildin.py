@@ -11,8 +11,18 @@ class plots:
         """
         Constructs a scatter plot using continous range of legends.
         """
-        fig = px.scatter(data, x='x', y='y', color='type',
-                 size='size',color_continuous_scale='Viridis')
+        max_size = max(data["size"])
+        fig = px.scatter(
+            data,
+            x = data["x"],
+            y = data["y"],
+            color = data["type"],
+            size = data["size"],
+            size_max = max_size,
+            range_color=[0,100],
+            render_mode='webgl',
+            color_continuous_scale=px.colors.sequential.Jet
+        )
         fig = plots.update_layout(fig,name)
         return fig
 
