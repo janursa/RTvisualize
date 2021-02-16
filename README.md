@@ -98,6 +98,14 @@ An example of this type can be found [here](https://github.com/janursa/RTvisuali
 ### License
 This project is licensed under the MIT License - see the LICENSE.md file for details
 
+## Cite
+Please cite this library using [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4542741.svg)](https://doi.org/10.5281/zenodo.4542741) 
+
+or 
+
+`Jalil Nourisa. (2021, February 16). janursa/RTvisualize: First publish on Zenodo (Version v1.1.19). Zenodo. http://doi.org/10.5281/zenodo.4542741`.
+
+
 ### Authors
 * Jalil Nourisa
 
