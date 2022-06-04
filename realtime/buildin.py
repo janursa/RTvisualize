@@ -62,13 +62,13 @@ class plots:
         return fig
 
     @staticmethod
-    def lines(data,name,x_limits):
+    def lines(specs,name,x_range):
         """Constructs a lines plot using Plotly Go
 
         Args:
             data (DataFrame): data in the form of Pandas DataFrame
             name (str): the title of the plot
-            x_limits (list): min and max of x axis
+            x_range (list): min and max of x axis
         
         Returns:
             Figure: Returns a figure object
@@ -76,6 +76,7 @@ class plots:
         random.shuffle(plots.line_colors)
         fig = go.Figure()
         i =0
+        data = specs['data']
         for key,value in data.items():
             fig.add_trace(go.Scatter(
                 y=value,
@@ -85,10 +86,25 @@ class plots:
             i+=1
 
         fig = plots.update_layout(fig,name)
-        fig.update_xaxes(range=[x_limits[0] - 0.5,x_limits[1] + 0.5])
-        fig.update_yaxes(range =
-                        [min([min(data[key]) for key in data.keys()]) - 0.5,
-                         max([max(data[key]) for key in data.keys()]) + 0.5])
+        fig.update_xaxes(range=[x_range[0] - 0.5,x_range[1] + 0.5])
+        if 'yrange' in specs:
+            yrange = specs['yrange']
+        else:
+            yrange = [min([min(data[key]) for key in data.keys()]) - 0.5,
+                         max([max(data[key]) for key in data.keys()]) + 0.5]
+        fig.update_yaxes(range =yrange)
+        
+        fig.update_layout(
+            # title="",
+            xaxis_title="Time (hours)",
+            yaxis_title="Concentration (ng/ml)",
+            # legend_title="Cell state",
+            font=dict(
+                family="Times",
+                size=22,
+                color="black"
+            )
+        )
         return fig
     @staticmethod
     def update_layout(fig,name):
@@ -124,8 +140,7 @@ class plots:
                         family = plots.font,
                         size = 20,
                         color = 'black'
-                    )
-                    
+                    )                    
                 ),
             
             yaxis = dict(
@@ -148,8 +163,6 @@ class plots:
                         color = 'black'
                     ),
                     zeroline = False),
-                    
-
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             legend=dict(
@@ -173,47 +186,71 @@ class plots:
             )
         )
         
-        fig.update_yaxes(automargin=True,showgrid=False,zeroline=False)
-        fig.update_xaxes(automargin=True,showgrid=False,zeroline=False)
+        # fig.update_yaxes(automargin=True,showgrid=False,zeroline=False)
+        # fig.update_xaxes(automargin=True,showgrid=False,zeroline=False)
         return fig
     @staticmethod
-    def scatter(data,name):
+    def scatter(specs,name,color_map):
         """Constructs a 2D scatter plot using Plotly express
         
         Args:
-            data (DataFrame): data in the form of Pandas DataFrame
+            specs (dict): specs
             name (str): the title of the plot
         
         Returns:
             Figure: Returns a figure object
         """
+        markersize = None
+        if 'markersize' in specs:
+            markersize = specs['markersize']
+
         fig = go.Figure()
         i =0
-        for agent_type,agent_data in data.items():
+        for agent_type,agent_data in specs['data'].items():
+            if agent_type == 'Empty':
+                opacity = 0
+            else:
+                opacity = 1
             fig.add_trace(go.Scatter(
                 x = agent_data['x'],
                 y= agent_data['y'],
                 name=agent_type,
-                mode='markers'
+                mode='markers',
+                opacity = opacity,
+                marker=dict(size=markersize,
+                           # line=dict(width=2,color=color_map[agent_type])
+                            )   
             ))
             i+=1
         fig = plots.update_layout(fig,name)
+        xrange = None
+        yrange = None
+        if 'xrange' in specs:
+            xrange = specs['xrange']
+        if 'yrange' in specs:
+            yrange = specs['yrange']
+        fig.update_xaxes(range = xrange)
+        fig.update_yaxes(range = yrange)
         return fig
     @staticmethod
-    def scatter3(data,name,color_map):
+    def scatter3(specs,name,color_map):
         """Constructs a 3 Dscatter plot using Plotly express
         
         Args:
-            data (DataFrame): data in the form of Pandas DataFrame
+            specs (DataFrame): specs in the python dict
             name (str): the title of the plot
         
         Returns:
             Figure: Returns a figure object
         """
+        markersize = None
+        if 'markersize' in specs:
+            markersize = specs['markersize']
+            
         fig = go.Figure()
         i =0
 
-        for agent_type,agent_data in data.items():
+        for agent_type,agent_data in specs['data'].items():
             if agent_type == 'Empty':
                 opacity = 0
             else:
@@ -225,10 +262,23 @@ class plots:
                 name=agent_type,
                 mode='markers',
                 opacity = opacity,
-                marker=dict(size=12,
-                           line=dict(width=2,color=color_map[agent_type])
+                marker=dict(size=markersize,
+                           line=dict(width=2)
                             )   
             ))
             i+=1
         fig = plots.update_layout(fig,name)
+        xrange = None
+        yrange = None
+        zrange = None
+        if 'xrange' in specs:
+            xrange = specs['xrange']
+        if 'yrange' in specs:
+            yrange = specs['yrange']
+        if 'zrange' in specs:
+            zrange = specs['zrange']
+        fig.update_scenes(xaxis = dict(range=xrange,visible=False, showticklabels=False),
+                     yaxis = dict(range=yrange,visible=False, showticklabels=False),
+                     zaxis = dict(range=zrange,visible=False, showticklabels=False),)
+        
         return fig

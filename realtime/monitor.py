@@ -55,7 +55,10 @@ class watch:
         self.cols = {}
         for key,spec in self.specs.items():
             if 'col' not in spec:
-                spec.update({'col':'col s6'})
+                if key == 'Cells':
+                    spec.update({'col':'col s6'})
+                else:
+                    spec.update({'col':'col s3'})
             self.cols.update({key:spec['col']})
         
         self.color_map = {} # maps color to each type in scatter plots
@@ -274,16 +277,16 @@ class watch:
                         min_x = max_x - self.specs[graph_tag]["x-axis-length"]
                     else:
                         min_x = min(self.specs[graph_tag]["data"].index)
-                    x_limits = [min_x,max_x]
+                    x_range = [min_x,max_x]
 
-                    FIG = plots.lines(self.specs[graph_tag]["data"],graph_tag,x_limits)
+                    FIG = plots.lines(self.specs[graph_tag],graph_tag,x_range)
                     
 
                 elif self.specs[graph_tag]["graph_type"] == "scatter2":
-                    FIG = plots.scatter(self.specs[graph_tag]["data"],graph_tag)
+                    FIG = plots.scatter(self.specs[graph_tag],graph_tag,self.color_map[graph_tag])
 
                 elif self.specs[graph_tag]["graph_type"] == "scatter3":
-                    FIG = plots.scatter3(self.specs[graph_tag]["data"],graph_tag,self.color_map[graph_tag])
+                    FIG = plots.scatter3(self.specs[graph_tag],graph_tag,self.color_map[graph_tag])
                 
                 elif self.specs[graph_tag]["graph_type"] == "map":
                     FIG = plots.map(self.specs[graph_tag]["data"],graph_tag,self.specs[graph_tag]["color_range"])
